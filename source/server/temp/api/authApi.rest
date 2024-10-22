@@ -1,0 +1,36 @@
+@baseUrl = http://localhost:3000/api/v1/auth
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTFjNjJmMi1iYWQzLTRkMDMtOTNmYS05ZWFjZGQwNTZiMDkiLCJyb2xlSWQiOiJmYTkxNDcyZC1mYmE2LTRhNmItYWZlNC0wMmM0MDk2ZDI0NTYiLCJyb2xlQ29kZSI6IkN1c3RvbWVyIiwiaWF0IjoxNzI4MjA2MDM4LCJleHAiOjE3MjgyMDY5Mzh9.6vIj_O_j9nBvMuzjKFVJGY7ub_kblDKxFnCSL8NFdic
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTFjNjJmMi1iYWQzLTRkMDMtOTNmYS05ZWFjZGQwNTZiMDkiLCJpYXQiOjE3MjgyMDYwMzgsImV4cCI6MTcyODgxMDgzOH0.SPMg-tthEHgh44jAAezelg7PEBt6cdm9hUGpSCVbYs8
+
+### login
+POST {{baseUrl}}/login
+Content-Type: application/json
+Authorization: Bear
+
+{
+  "email": "admin@gmail.com",
+  "password": "12345678@Abc"
+}
+
+### register
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "12345678@Abc"
+}
+
+### refresh-token
+POST {{baseUrl}}/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### delete refresh token
+GET http://localhost:3000/api/v1/tokens/
+
+### delete refresh token
+DELETE http://localhost:3000/api/v1/tokens/1c32282b-b59f-4832-a8e7-d55280f783b2

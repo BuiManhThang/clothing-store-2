@@ -1,0 +1,13 @@
+import { I{{EntityName}}Repo } from '../../interfaces/repositories/I{{EntityName}}Repo'
+
+export class Delete{{EntityName}}UseCase {
+  readonly #{{entityName}}Repo: I{{EntityName}}Repo
+
+  constructor({{entityName}}Service: I{{EntityName}}Repo) {
+    this.#{{entityName}}Repo = {{entityName}}Service
+  }
+
+  async execute(id: string): Promise<boolean> {
+    return await this.#{{entityName}}Repo.delete(id)
+  }
+}

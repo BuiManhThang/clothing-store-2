@@ -1,0 +1,14 @@
+import { Router } from 'express'
+import { {{EntityName}}Controller } from '../controllers/{{EntityName}}Controller'
+
+export const create{{EntityName}}Router = ({{entityName}}Controller: {{EntityName}}Controller) => {
+  const router = Router()
+
+  router.get('/', (req, res) => {{entityName}}Controller.findAll(req, res))
+  router.get('/:id', (req, res) => {{entityName}}Controller.findById(req, res))
+  router.post('/', (req, res) => {{entityName}}Controller.create(req, res))
+  router.put('/:id', (req, res) => {{entityName}}Controller.update(req, res))
+  router.delete('/:id', (req, res) => {{entityName}}Controller.delete(req, res))
+
+  return router
+}

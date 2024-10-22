@@ -1,0 +1,17 @@
+export interface Create{{EntityName}}DTO {
+{{#each createDtoColumns}}
+  {{column_name}}: {{data_type}};
+{{/each}}
+}
+
+export interface Update{{EntityName}}DTO {
+{{#each createDtoColumns}}
+  {{column_name}}: {{data_type}};
+{{/each}}
+}
+
+export interface View{{EntityName}}DTO {
+{{#each columns}}
+  {{column_name}}: {{data_type}};
+{{/each}}
+}

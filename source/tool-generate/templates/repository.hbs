@@ -1,0 +1,9 @@
+import { I{{EntityName}}Repo } from '../../application/interfaces/repositories/I{{EntityName}}Repo'
+import { {{EntityName}} } from '../../domain/entities/{{EntityName}}'
+import { BasePostgresRepo } from './BasePostgresRepo'
+
+export class {{EntityName}}PostgresRepo extends BasePostgresRepo<{{EntityName}}> implements I{{EntityName}}Repo {
+  constructor() {
+    super('{{entityNames}}')
+  }
+}

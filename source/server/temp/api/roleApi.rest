@@ -1,0 +1,93 @@
+@baseUrl = http://localhost:3000/api/v1
+
+### creatre role admin
+POST {{baseUrl}}/roles
+Content-Type: application/json
+
+{
+  "code": "Admin",
+  "name": "Quản trị",
+  "description": "Quản trị",
+  "roleDetails": [
+    {
+      "screenCode": "Customer",
+      "actions": ["View", "Edit"]
+    },
+    {
+      "screenCode": "Dashboard",
+      "actions": ["View", "Edit"]
+    },
+    {
+      "screenCode": "Users",
+      "actions": ["View", "Edit"]
+    },
+    {
+      "screenCode": "Categories",
+      "actions": ["View", "Edit"]
+    },
+    {
+      "screenCode": "Products",
+      "actions": ["View", "Edit"]
+    },
+    {
+      "screenCode": "Receipts",
+      "actions": ["View", "Edit"]
+    },
+    {
+      "screenCode": "Orders",
+      "actions": ["View", "Edit"]
+    },
+    {
+      "screenCode": "Reviews",
+      "actions": ["View", "Edit"]
+    },
+    {
+      "screenCode": "Setting",
+      "actions": ["View", "Edit"]
+    }
+  ]
+}
+
+### creatre role customer
+POST {{baseUrl}}/roles
+Content-Type: application/json
+
+{
+  //"code": "Customer",
+  "name": "Khách hàng",
+  "description": "Khách hàng",
+  "roleDetails": [
+    {
+      "screenCode": "Customer",
+      "actions": ["View", "Edit"]
+    }
+  ]
+}
+
+### get all roles
+GET {{baseUrl}}/roles
+
+### get role by id
+GET {{baseUrl}}/roles/e4b96052-a5e4-447b-b28e-1749e079b999
+
+### update role by id
+PUT  {{baseUrl}}/roles/fa91472d-fba6-4a6b-afe4-02c4096d2456
+Content-Type: application/json
+
+{
+  "code": "Customer",
+  "name": "Khách hàng",
+  "roleDetails": [
+    {
+      "screenCode": "Customer",
+      "actions": [
+        "View",
+        "Edit"
+      ]
+    }
+  ],
+  "description": "Khách hàng 2"
+}
+
+### deletet role by id
+DELETE  {{baseUrl}}/roles/e4b96052-a5e4-447b-b28e-1749e079b999

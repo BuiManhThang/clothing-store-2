@@ -1,0 +1,34 @@
+import { {{EntityName}} } from '../../../domain/entities/{{EntityName}}'
+import { NotFoundError } from '../../../shared/errors/NotFoundError'
+import { Update{{EntityName}}DTO, View{{EntityName}}DTO } from '../../dtos/{{EntityName}}DTO'
+import { I{{EntityName}}Repo } from '../../interfaces/repositories/I{{EntityName}}Repo'
+import { {{EntityName}}Mapper } from '../../mappers/{{EntityName}}Mapper'
+
+export class Update{{EntityName}}UseCase {
+  readonly #{{entityName}}Repo: I{{EntityName}}Repo
+
+  constructor({{entityName}}Repo: I{{EntityName}}Repo) {
+    this.#{{entityName}}Repo = {{entityName}}Repo
+  }
+
+  async execute(id: string, update{{entityName}}DTO: Update{{EntityName}}DTO): Promise<View{{EntityName}}DTO | null> {
+    const old{{EntityName}} = await this.#{{entityName}}Repo.findById(id)
+    if (!old{{EntityName}}) throw new NotFoundError('')
+
+    const {{entityName}}: {{EntityName}} = {
+      id: old{{EntityName}}.id,
+    {{#each createColumns}}
+      {{column_name}}: update{{entityName}}DTO.{{column_name}},
+    {{/each}}
+      createdAt: old{{EntityName}}.createdAt,
+      createdBy: old{{EntityName}}.createdBy,
+      modifiedAt: new Date(),
+      modifiedBy: '',
+    }
+
+    const updated{{EntityName}} = await this.#{{entityName}}Repo.update(id, {{entityName}})
+
+    if (updated{{EntityName}}) return {{EntityName}}Mapper.toView{{EntityName}}DTO(updated{{EntityName}})
+    return null
+  }
+}

@@ -1,0 +1,92 @@
+import { Request, Response } from 'express'
+import { Create{{EntityName}}UseCase } from '../../application/use-cases/{{entityName}}/Create{{EntityName}}UseCase'
+import { Delete{{EntityName}}UseCase } from '../../application/use-cases/{{entityName}}/Delete{{EntityName}}UseCase'
+import { FindAll{{EntityNames}}UseCase } from '../../application/use-cases/{{entityName}}/FindAll{{EntityNames}}UseCase'
+import { Find{{EntityName}}ByIdUseCase } from '../../application/use-cases/{{entityName}}/Find{{EntityName}}ByIdUseCase'
+import { Update{{EntityName}}UseCase } from '../../application/use-cases/{{entityName}}/Update{{EntityName}}UseCase'
+import { Create{{EntityName}}DTO, Update{{EntityName}}DTO } from '../../application/dtos/{{EntityName}}DTO'
+import { BaseController } from './BaseController'
+import { HTTP_STATUS } from '../../shared/constants/httpStatus'
+
+export class {{EntityName}}Controller extends BaseController {
+  readonly #create{{EntityName}}UseCase: Create{{EntityName}}UseCase
+  readonly #update{{EntityName}}UseCase: Update{{EntityName}}UseCase
+  readonly #find{{EntityName}}ByIdUseCase: Find{{EntityName}}ByIdUseCase
+  readonly #findAll{{EntityNames}}UseCase: FindAll{{EntityNames}}UseCase
+  readonly #delete{{EntityName}}UseCase: Delete{{EntityName}}UseCase
+
+  constructor(
+    create{{EntityName}}UseCase: Create{{EntityName}}UseCase,
+    update{{EntityName}}UseCase: Update{{EntityName}}UseCase,
+    find{{EntityName}}ByIdUseCase: Find{{EntityName}}ByIdUseCase,
+    findAll{{EntityNames}}UseCase: FindAll{{EntityNames}}UseCase,
+    delete{{EntityName}}UseCase: Delete{{EntityName}}UseCase
+  ) {
+    super()
+    this.#create{{EntityName}}UseCase = create{{EntityName}}UseCase
+    this.#update{{EntityName}}UseCase = update{{EntityName}}UseCase
+    this.#find{{EntityName}}ByIdUseCase = find{{EntityName}}ByIdUseCase
+    this.#findAll{{EntityNames}}UseCase = findAll{{EntityNames}}UseCase
+    this.#delete{{EntityName}}UseCase = delete{{EntityName}}UseCase
+  }
+
+  async create(req: Request, res: Response) {
+    const create{{EntityName}}DTO: Create{{EntityName}}DTO = req.body
+
+    try {
+      const created{{EntityName}} = await this.#create{{EntityName}}UseCase.execute(create{{EntityName}}DTO)
+      return res.status(HTTP_STATUS.CREATED).json(created{{EntityName}})
+    } catch (error) {
+      return this.handleAppError(error, res)
+    }
+  }
+
+  async update(req: Request, res: Response) {
+    const {{entityName}}Id = req.params.id
+    const update{{EntityName}}DTO: Update{{EntityName}}DTO = req.body
+
+    try {
+      const updated{{EntityName}} = await this.#update{{EntityName}}UseCase.execute({{entityName}}Id, update{{EntityName}}DTO)
+      return res.status(HTTP_STATUS.OK).json(updated{{EntityName}})
+    } catch (error) {
+      return this.handleAppError(error, res)
+    }
+  }
+
+  async findById(req: Request, res: Response) {
+    const {{entityName}}Id = req.params.id
+
+    try {
+      const {{entityName}} = await this.#find{{EntityName}}ByIdUseCase.execute({{entityName}}Id)
+      if (!{{entityName}}) {
+        return res.sendStatus(HTTP_STATUS.NOT_FOUND)
+      }
+
+      return res.status(HTTP_STATUS.OK).json({{entityName}})
+    } catch (error) {
+      return this.handleAppError(error, res)
+    }
+  }
+
+  async findAll(_req: Request, res: Response) {
+    try {
+      const {{entityNames}} = await this.#findAll{{EntityNames}}UseCase.execute()
+
+      return res.status(HTTP_STATUS.OK).json({{entityNames}})
+    } catch (error) {
+      return this.handleAppError(error, res)
+    }
+  }
+
+  async delete(req: Request, res: Response) {
+    const {{entityName}}Id = req.params.id
+
+    try {
+      await this.#delete{{EntityName}}UseCase.execute({{entityName}}Id)
+
+      return res.sendStatus(HTTP_STATUS.NO_CONTENT)
+    } catch (error) {
+      return this.handleAppError(error, res)
+    }
+  }
+}

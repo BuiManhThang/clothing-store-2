@@ -1,0 +1,28 @@
+import { {{EntityName}} } from '../../../domain/entities/{{EntityName}}'
+import { Create{{EntityName}}DTO, View{{EntityName}}DTO } from '../../dtos/{{EntityName}}DTO'
+import { I{{EntityName}}Repo } from '../../interfaces/repositories/I{{EntityName}}Repo'
+import { {{EntityName}}Mapper } from '../../mappers/{{EntityName}}Mapper'
+import { generateUUID } from '../../../shared/utils/commonUtil'
+
+export class Create{{EntityName}}UseCase {
+  readonly #{{entityName}}Repo: I{{EntityName}}Repo
+
+  constructor({{entityName}}Repo: I{{EntityName}}Repo) {
+    this.#{{entityName}}Repo = {{entityName}}Repo
+  }
+
+  async execute(create{{EntityName}}Dto: Create{{EntityName}}DTO): Promise<View{{EntityName}}DTO> {
+    const {{entityName}}: {{EntityName}} = {
+      id: generateUUID(),
+    {{#each createColumns}}
+      {{column_name}}: create{{EntityName}}Dto.{{column_name}},
+    {{/each}}
+      createdAt: new Date(),
+      createdBy: '',
+    }
+
+    const new{{EntityName}} = await this.#{{entityName}}Repo.create({{entityName}})
+
+    return {{EntityName}}Mapper.toView{{EntityName}}DTO(new{{EntityName}})
+  }
+}

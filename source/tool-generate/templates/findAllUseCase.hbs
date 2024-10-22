@@ -1,0 +1,16 @@
+import { View{{EntityName}}DTO } from '../../dtos/{{EntityName}}DTO'
+import { I{{EntityName}}Repo } from '../../interfaces/repositories/I{{EntityName}}Repo'
+import { {{EntityName}}Mapper } from '../../mappers/{{EntityName}}Mapper'
+
+export class FindAll{{EntityNames}}UseCase {
+  readonly #{{entityName}}Repo: I{{EntityName}}Repo
+
+  constructor({{entityName}}Service: I{{EntityName}}Repo) {
+    this.#{{entityName}}Repo = {{entityName}}Service
+  }
+
+  async execute(): Promise<View{{EntityName}}DTO[]> {
+    const {{entityNames}} = await this.#{{entityName}}Repo.findAll()
+    return {{entityNames}}.map(({{entityName}}) => {{EntityName}}Mapper.toView{{EntityName}}DTO({{entityName}}))
+  }
+}
