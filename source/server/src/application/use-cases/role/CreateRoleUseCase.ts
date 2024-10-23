@@ -1,5 +1,5 @@
 import { Role } from '../../../domain/entities/Role'
-import { RoleDtoCreate, RoleDtoView } from '../../dtos/RoleDTO'
+import { RoleDtoCreate, RoleDtoView } from '../../dtos/RoleDto'
 import { IRoleRepo } from '../../../domain/interfaces/repositories/IRoleRepo'
 import { RoleMapper } from '../../mappers/RoleMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
@@ -7,6 +7,7 @@ import { ValidateCondition } from '../../../shared/types'
 import { ValidateAction, ValidateRuleType } from '../../../shared/enums'
 import { validate } from '../../../shared/utils/validator'
 import { BadRequestError } from '../../../shared/errors/BadRequestError'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 const validateConditions: ValidateCondition<RoleDtoCreate>[] = [
   {
@@ -45,7 +46,10 @@ export class CreateRoleUseCase {
     this.#roleRepo = roleRepo
   }
 
-  async execute(createRoleDto: RoleDtoCreate, createdBy: string): Promise<RoleDtoView> {
+  async execute(
+    userContextService: IUserContextService | undefined,
+    createRoleDto: RoleDtoCreate
+  ): Promise<RoleDtoView> {
     const validateResult = validate(createRoleDto, validateConditions)
     if (validateResult.length) {
       throw new BadRequestError('', validateResult)
@@ -58,7 +62,7 @@ export class CreateRoleUseCase {
       roleDetails: createRoleDto.roleDetails,
       description: createRoleDto.description,
       createdAt: new Date(),
-      createdBy: createdBy,
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newRole = await this.#roleRepo.create(role)

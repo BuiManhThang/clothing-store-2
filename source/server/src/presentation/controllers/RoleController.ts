@@ -1,12 +1,13 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { CreateRoleUseCase } from '../../application/use-cases/role/CreateRoleUseCase'
 import { DeleteRoleUseCase } from '../../application/use-cases/role/DeleteRoleUseCase'
 import { FindAllRolesUseCase } from '../../application/use-cases/role/FindAllRolesUseCase'
 import { FindRoleByIdUseCase } from '../../application/use-cases/role/FindRoleByIdUseCase'
 import { UpdateRoleUseCase } from '../../application/use-cases/role/UpdateRoleUseCase'
-import { RoleDtoCreate, RoleDtoUpdate } from '../../application/dtos/RoleDto'
 import { BaseController } from './BaseController'
 import { HTTP_STATUS } from '../../shared/constants/httpStatus'
+import { RoleDtoCreate, RoleDtoUpdate } from '../../application/dtos/RoleDto'
+import { GetPaginationRoleUseCase } from '../../application/use-cases/role/GetPaginationRoleUseCase'
 
 export class RoleController extends BaseController {
   readonly #createRoleUseCase: CreateRoleUseCase
@@ -14,12 +15,14 @@ export class RoleController extends BaseController {
   readonly #findRoleByIdUseCase: FindRoleByIdUseCase
   readonly #findAllRolesUseCase: FindAllRolesUseCase
   readonly #deleteRoleUseCase: DeleteRoleUseCase
+  readonly #getPaginationRoleUseCase: GetPaginationRoleUseCase
 
   constructor(
     createRoleUseCase: CreateRoleUseCase,
     updateRoleUseCase: UpdateRoleUseCase,
     findRoleByIdUseCase: FindRoleByIdUseCase,
     findAllRolesUseCase: FindAllRolesUseCase,
+    getPaginationRoleUseCase: GetPaginationRoleUseCase,
     deleteRoleUseCase: DeleteRoleUseCase
   ) {
     super()
@@ -27,33 +30,41 @@ export class RoleController extends BaseController {
     this.#updateRoleUseCase = updateRoleUseCase
     this.#findRoleByIdUseCase = findRoleByIdUseCase
     this.#findAllRolesUseCase = findAllRolesUseCase
+    this.#getPaginationRoleUseCase = getPaginationRoleUseCase
     this.#deleteRoleUseCase = deleteRoleUseCase
   }
 
-  async create(req: Request, res: Response) {
+  async create(req: Request, res: Response, next: NextFunction) {
     const createRoleDTO: RoleDtoCreate = req.body
 
     try {
-      const createdRole = await this.#createRoleUseCase.execute(createRoleDTO)
+      const createdRole = await this.#createRoleUseCase.execute(
+        req.userContextService,
+        createRoleDTO
+      )
       return res.status(HTTP_STATUS.CREATED).json(createdRole)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const roleId = req.params.id
     const updateRoleDTO: RoleDtoUpdate = req.body
 
     try {
-      const updatedRole = await this.#updateRoleUseCase.execute(roleId, updateRoleDTO)
+      const updatedRole = await this.#updateRoleUseCase.execute(
+        req.userContextService,
+        roleId,
+        updateRoleDTO
+      )
       return res.status(HTTP_STATUS.OK).json(updatedRole)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findById(req: Request, res: Response) {
+  async findById(req: Request, res: Response, next: NextFunction) {
     const roleId = req.params.id
 
     try {
@@ -64,21 +75,40 @@ export class RoleController extends BaseController {
 
       return res.status(HTTP_STATUS.OK).json(role)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findAll(_req: Request, res: Response) {
+  async findAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const roles = await this.#findAllRolesUseCase.execute()
 
       return res.status(HTTP_STATUS.OK).json(roles)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async delete(req: Request, res: Response) {
+  async getPagination(req: Request, res: Response, next: NextFunction) {
+    try {
+      const pageSize = req.query.pageSize ? parseInt(req.query.pageSize.toString()) : undefined
+      const pageIndex = req.query.pageIndex ? parseInt(req.query.pageIndex.toString()) : undefined
+      const paginationResult = await this.#getPaginationRoleUseCase.execute(
+        pageSize,
+        pageIndex,
+        req.query.sort?.toString(),
+        req.query.sortDirection?.toString(),
+        req.query.code?.toString(),
+        req.query.name?.toString()
+      )
+
+      return res.status(HTTP_STATUS.OK).json(paginationResult)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction) {
     const roleId = req.params.id
 
     try {
@@ -86,7 +116,7 @@ export class RoleController extends BaseController {
 
       return res.sendStatus(HTTP_STATUS.NO_CONTENT)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 }

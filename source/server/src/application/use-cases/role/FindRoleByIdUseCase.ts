@@ -1,4 +1,4 @@
-import { RoleDtoView } from '../../dtos/RoleDTO'
+import { RoleDtoView } from '../../dtos/RoleDto'
 import { IRoleRepo } from '../../../domain/interfaces/repositories/IRoleRepo'
 import { RoleMapper } from '../../mappers/RoleMapper'
 

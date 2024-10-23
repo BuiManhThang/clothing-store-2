@@ -1,8 +1,9 @@
 import { Role } from '../../../domain/entities/Role'
 import { NotFoundError } from '../../../shared/errors/NotFoundError'
-import { RoleDtoUpdate, RoleDtoView } from '../../dtos/RoleDTO'
+import { RoleDtoUpdate, RoleDtoView } from '../../dtos/RoleDto'
 import { IRoleRepo } from '../../../domain/interfaces/repositories/IRoleRepo'
 import { RoleMapper } from '../../mappers/RoleMapper'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class UpdateRoleUseCase {
   readonly #roleRepo: IRoleRepo
@@ -12,9 +13,9 @@ export class UpdateRoleUseCase {
   }
 
   async execute(
+    userContextService: IUserContextService | undefined,
     id: string,
-    roleDtoUpdate: RoleDtoUpdate,
-    modifiedBy: string
+    roleDtoUpdate: RoleDtoUpdate
   ): Promise<RoleDtoView | null> {
     const oldRole = await this.#roleRepo.findById(id)
     if (!oldRole) throw new NotFoundError('')
@@ -28,7 +29,7 @@ export class UpdateRoleUseCase {
       createdAt: oldRole.createdAt,
       createdBy: oldRole.createdBy,
       modifiedAt: new Date(),
-      modifiedBy: modifiedBy,
+      modifiedBy: userContextService?.getCurrentUserId() || '',
     }
 
     const updatedRole = await this.#roleRepo.update(id, role)

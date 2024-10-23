@@ -18,12 +18,14 @@ const createRoleUseCase = new CreateRoleUseCase(roleRepo)
 const updateRoleUseCase = new UpdateRoleUseCase(roleRepo)
 const findRoleByIdUseCase = new FindRoleByIdUseCase(roleRepo)
 const findAllRolesUseCase = new FindAllRolesUseCase(roleRepo)
+const getPaginationRoleUseCase = new GetPaginationRoleUseCase(roleRepo)
 const deleteRoleUseCase = new DeleteRoleUseCase(roleRepo)
 const roleController = new RoleController(
   createRoleUseCase,
   updateRoleUseCase,
   findRoleByIdUseCase,
   findAllRolesUseCase,
+  getPaginationRoleUseCase,
   deleteRoleUseCase
 )
 export const roleRouter = createRoleRouter(roleController)
@@ -419,6 +421,7 @@ import { AuthService } from '../../application/services/AuthService'
 import { RefreshTokenUseCase } from '../../application/use-cases/auth/RefreshTokenUseCase'
 import { LoginUseCase } from '../../application/use-cases/auth/LoginUseCase'
 import { LogoutUseCase } from '../../application/use-cases/auth/LogoutUseCase'
+import { GetPaginationRoleUseCase } from '../../application/use-cases/role/GetPaginationRoleUseCase'
 
 const authService = new AuthService(userRepo, roleRepo, tokenRepo, jwtService)
 const registerUseCase = new RegisterUseCase(authService)

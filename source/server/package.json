@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon --files src/index.ts",
     "build": "tsc",
+    "clear": "tsc --clean",
     "test": "jest",
     "serve": "node dist/index.js"
   },

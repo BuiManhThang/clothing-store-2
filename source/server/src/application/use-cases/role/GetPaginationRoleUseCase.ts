@@ -1,4 +1,4 @@
-import { RoleDtoView } from '../../dtos/RoleDTO'
+import { RoleDtoView } from '../../dtos/RoleDto'
 import { IRoleRepo } from '../../../domain/interfaces/repositories/IRoleRepo'
 import { RoleMapper } from '../../mappers/RoleMapper'
 import {
@@ -18,10 +18,10 @@ export class GetPaginationRoleUseCase {
   }
 
   async execute(
-    pageSize: number,
-    pageIndex: number,
+    pageSize?: number,
+    pageIndex?: number,
     sort?: string,
-    sortDirection?: 'desc' | 'asc',
+    sortDirection?: string,
     code?: string,
     name?: string
   ): Promise<PaginationResult<RoleDtoView>> {
@@ -47,7 +47,10 @@ export class GetPaginationRoleUseCase {
     if (sort && sort in ({} as Role)) {
       sortObjects.push({
         column: sort as keyof Role,
-        direction: sortDirection === 'desc' ? SortDirection.Desc : SortDirection.Asc,
+        direction:
+          sortDirection?.toLocaleLowerCase() === SortDirection.Desc.toString().toLocaleLowerCase()
+            ? SortDirection.Desc
+            : SortDirection.Asc,
       })
     }
 

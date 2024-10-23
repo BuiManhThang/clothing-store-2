@@ -23,6 +23,7 @@ import {
 } from './presentation/routers'
 import config from './config'
 import { errorMiddleware } from './shared/middlewares/errorMiddleware'
+import { userContextMiddleware } from './shared/middlewares/userContextMiddleware'
 
 const app = express()
 const PORT = config.app.port
@@ -34,6 +35,8 @@ pool
   .connect()
   .then(() => {
     console.log('Connected to PostgreSQL database')
+
+    app.use(userContextMiddleware)
 
     app.use(`${config.app.apiPrefix}/roles`, roleRouter)
     app.use(`${config.app.apiPrefix}/tokens`, tokenRouter)
