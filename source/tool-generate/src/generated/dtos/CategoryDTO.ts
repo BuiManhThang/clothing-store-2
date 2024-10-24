@@ -1,4 +1,4 @@
-export interface CreateCategoryDTO {
+export interface CategoryDtoCreate {
   productCount: number;
   imageId: string;
   status: string;
@@ -7,7 +7,7 @@ export interface CreateCategoryDTO {
   description: string;
 }
 
-export interface UpdateCategoryDTO {
+export interface CategoryDtoUpdate {
   productCount: number;
   imageId: string;
   status: string;
@@ -16,11 +16,15 @@ export interface UpdateCategoryDTO {
   description: string;
 }
 
-export interface ViewCategoryDTO {
+export interface CategoryDtoView {
   productCount: number;
   imageId: string;
   status: string;
   code: string;
   name: string;
   description: string;
+  createdAt: Date
+  createdBy: string
+  modifiedAt?: Date
+  modifiedBy?: string
 }

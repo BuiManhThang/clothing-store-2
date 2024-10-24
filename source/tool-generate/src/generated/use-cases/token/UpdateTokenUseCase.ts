@@ -1,8 +1,9 @@
 import { Token } from '../../../domain/entities/Token'
 import { NotFoundError } from '../../../shared/errors/NotFoundError'
-import { UpdateTokenDTO, ViewTokenDTO } from '../../dtos/TokenDTO'
-import { ITokenRepo } from '../../interfaces/repositories/ITokenRepo'
+import { TokenDtoUpdate, TokenDtoView } from '../../dtos/TokenDto'
+import { ITokenRepo } from '../../../domain/interfaces/repositories/ITokenRepo'
 import { TokenMapper } from '../../mappers/TokenMapper'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class UpdateTokenUseCase {
   readonly #tokenRepo: ITokenRepo
@@ -11,25 +12,25 @@ export class UpdateTokenUseCase {
     this.#tokenRepo = tokenRepo
   }
 
-  async execute(id: string, updatetokenDTO: UpdateTokenDTO): Promise<ViewTokenDTO | null> {
+  async execute(userContextService: IUserContextService | undefined, id: string, updatetokenDto: TokenDtoUpdate): Promise<TokenDtoView | null> {
     const oldToken = await this.#tokenRepo.findById(id)
     if (!oldToken) throw new NotFoundError('')
 
     const token: Token = {
       id: oldToken.id,
-      userId: updatetokenDTO.userId,
-      expireDate: updatetokenDTO.expireDate,
-      refreshToken: updatetokenDTO.refreshToken,
-      device: updatetokenDTO.device,
+      userId: updatetokenDto.userId,
+      expireDate: updatetokenDto.expireDate,
+      refreshToken: updatetokenDto.refreshToken,
+      device: updatetokenDto.device,
       createdAt: oldToken.createdAt,
       createdBy: oldToken.createdBy,
       modifiedAt: new Date(),
-      modifiedBy: '',
+      modifiedBy: userContextService?.getCurrentUserId() || '',
     }
 
     const updatedToken = await this.#tokenRepo.update(id, token)
 
-    if (updatedToken) return TokenMapper.toViewTokenDTO(updatedToken)
+    if (updatedToken) return TokenMapper.toTokenDtoView(updatedToken)
     return null
   }
 }

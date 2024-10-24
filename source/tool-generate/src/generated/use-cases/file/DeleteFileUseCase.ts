@@ -1,4 +1,4 @@
-import { IFileRepo } from '../../interfaces/repositories/IFileRepo'
+import { IFileRepo } from '../../../domain/interfaces/repositories/IFileRepo'
 
 export class DeleteFileUseCase {
   readonly #fileRepo: IFileRepo

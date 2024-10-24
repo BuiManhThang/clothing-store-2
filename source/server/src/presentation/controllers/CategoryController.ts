@@ -1,10 +1,11 @@
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { CreateCategoryUseCase } from '../../application/use-cases/category/CreateCategoryUseCase'
 import { DeleteCategoryUseCase } from '../../application/use-cases/category/DeleteCategoryUseCase'
 import { FindAllCategoriesUseCase } from '../../application/use-cases/category/FindAllCategoriesUseCase'
+import { GetCategoryPaginationUseCase } from '../../application/use-cases/category/GetCategoryPaginationUseCase'
 import { FindCategoryByIdUseCase } from '../../application/use-cases/category/FindCategoryByIdUseCase'
 import { UpdateCategoryUseCase } from '../../application/use-cases/category/UpdateCategoryUseCase'
-import { CreateCategoryDTO, UpdateCategoryDTO } from '../../application/dtos/CategoryDTO'
+import { CategoryDtoCreate, CategoryDtoUpdate } from '../../application/dtos/CategoryDto'
 import { BaseController } from './BaseController'
 import { HTTP_STATUS } from '../../shared/constants/httpStatus'
 
@@ -13,6 +14,7 @@ export class CategoryController extends BaseController {
   readonly #updateCategoryUseCase: UpdateCategoryUseCase
   readonly #findCategoryByIdUseCase: FindCategoryByIdUseCase
   readonly #findAllCategoriesUseCase: FindAllCategoriesUseCase
+  readonly #getPaginationCategoryUseCase: GetCategoryPaginationUseCase
   readonly #deleteCategoryUseCase: DeleteCategoryUseCase
 
   constructor(
@@ -20,6 +22,7 @@ export class CategoryController extends BaseController {
     updateCategoryUseCase: UpdateCategoryUseCase,
     findCategoryByIdUseCase: FindCategoryByIdUseCase,
     findAllCategoriesUseCase: FindAllCategoriesUseCase,
+    getPaginationCategoryUseCase: GetCategoryPaginationUseCase,
     deleteCategoryUseCase: DeleteCategoryUseCase
   ) {
     super()
@@ -27,36 +30,34 @@ export class CategoryController extends BaseController {
     this.#updateCategoryUseCase = updateCategoryUseCase
     this.#findCategoryByIdUseCase = findCategoryByIdUseCase
     this.#findAllCategoriesUseCase = findAllCategoriesUseCase
+    this.#getPaginationCategoryUseCase = getPaginationCategoryUseCase
     this.#deleteCategoryUseCase = deleteCategoryUseCase
   }
 
-  async create(req: Request, res: Response) {
-    const createCategoryDTO: CreateCategoryDTO = req.body
+  async create(req: Request, res: Response, next: NextFunction) {
+    const createCategoryDto: CategoryDtoCreate = req.body
 
     try {
-      const createdCategory = await this.#createCategoryUseCase.execute(createCategoryDTO)
+      const createdCategory = await this.#createCategoryUseCase.execute(req.userContextService, createCategoryDto)
       return res.status(HTTP_STATUS.CREATED).json(createdCategory)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const categoryId = req.params.id
-    const updateCategoryDTO: UpdateCategoryDTO = req.body
+    const updateCategoryDto: CategoryDtoUpdate = req.body
 
     try {
-      const updatedCategory = await this.#updateCategoryUseCase.execute(
-        categoryId,
-        updateCategoryDTO
-      )
+      const updatedCategory = await this.#updateCategoryUseCase.execute(req.userContextService, categoryId, updateCategoryDto)
       return res.status(HTTP_STATUS.OK).json(updatedCategory)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findById(req: Request, res: Response) {
+  async findById(req: Request, res: Response, next: NextFunction) {
     const categoryId = req.params.id
 
     try {
@@ -67,21 +68,38 @@ export class CategoryController extends BaseController {
 
       return res.status(HTTP_STATUS.OK).json(category)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findAll(_req: Request, res: Response) {
+  async findAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const categories = await this.#findAllCategoriesUseCase.execute()
 
       return res.status(HTTP_STATUS.OK).json(categories)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async delete(req: Request, res: Response) {
+  async getPagination(req: Request, res: Response, next: NextFunction) {
+    try {
+      const pageSize = req.query.pageSize ? parseInt(req.query.pageSize.toString()) : undefined
+      const pageIndex = req.query.pageIndex ? parseInt(req.query.pageIndex.toString()) : undefined
+      const paginationResult = await this.#getPaginationCategoryUseCase.execute(
+        pageSize,
+        pageIndex,
+        req.query.sort?.toString(),
+        req.query.sortDirection?.toString(),
+      )
+
+      return res.status(HTTP_STATUS.OK).json(paginationResult)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction) {
     const categoryId = req.params.id
 
     try {
@@ -89,7 +107,7 @@ export class CategoryController extends BaseController {
 
       return res.sendStatus(HTTP_STATUS.NO_CONTENT)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 }

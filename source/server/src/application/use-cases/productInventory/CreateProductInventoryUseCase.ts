@@ -1,8 +1,9 @@
 import { ProductInventory } from '../../../domain/entities/ProductInventory'
-import { CreateProductInventoryDTO, ViewProductInventoryDTO } from '../../dtos/ProductInventoryDTO'
+import { ProductInventoryDtoCreate, ProductInventoryDtoView } from '../../dtos/ProductInventoryDto'
 import { IProductInventoryRepo } from '../../../domain/interfaces/repositories/IProductInventoryRepo'
 import { ProductInventoryMapper } from '../../mappers/ProductInventoryMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class CreateProductInventoryUseCase {
   readonly #productInventoryRepo: IProductInventoryRepo
@@ -11,9 +12,7 @@ export class CreateProductInventoryUseCase {
     this.#productInventoryRepo = productInventoryRepo
   }
 
-  async execute(
-    createProductInventoryDto: CreateProductInventoryDTO
-  ): Promise<ViewProductInventoryDTO> {
+  async execute(userContextService: IUserContextService | undefined, createProductInventoryDto: ProductInventoryDtoCreate): Promise<ProductInventoryDtoView> {
     const productInventory: ProductInventory = {
       id: generateUUID(),
       productId: createProductInventoryDto.productId,
@@ -21,11 +20,11 @@ export class CreateProductInventoryUseCase {
       sizeId: createProductInventoryDto.sizeId,
       quantity: createProductInventoryDto.quantity,
       createdAt: new Date(),
-      createdBy: '',
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newProductInventory = await this.#productInventoryRepo.create(productInventory)
 
-    return ProductInventoryMapper.toViewProductInventoryDTO(newProductInventory)
+    return ProductInventoryMapper.toProductInventoryDtoView(newProductInventory)
   }
 }

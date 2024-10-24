@@ -1,5 +1,5 @@
-import { ViewReceiptDetailDTO } from '../../dtos/ReceiptDetailDTO'
-import { IReceiptDetailRepo } from '../../interfaces/repositories/IReceiptDetailRepo'
+import { ReceiptDetailDtoView } from '../../dtos/ReceiptDetailDto'
+import { IReceiptDetailRepo } from '../../../domain/interfaces/repositories/IReceiptDetailRepo'
 import { ReceiptDetailMapper } from '../../mappers/ReceiptDetailMapper'
 
 export class FindAllReceiptDetailsUseCase {
@@ -9,8 +9,8 @@ export class FindAllReceiptDetailsUseCase {
     this.#receiptDetailRepo = receiptDetailService
   }
 
-  async execute(): Promise<ViewReceiptDetailDTO[]> {
+  async execute(): Promise<ReceiptDetailDtoView[]> {
     const receiptDetails = await this.#receiptDetailRepo.findAll()
-    return receiptDetails.map((receiptDetail) => ReceiptDetailMapper.toViewReceiptDetailDTO(receiptDetail))
+    return receiptDetails.map((receiptDetail) => ReceiptDetailMapper.toReceiptDetailDtoView(receiptDetail))
   }
 }

@@ -1,8 +1,9 @@
 import { Card } from '../../../domain/entities/Card'
-import { CreateCardDTO, ViewCardDTO } from '../../dtos/CardDTO'
-import { ICardRepo } from '../../interfaces/repositories/ICardRepo'
+import { CardDtoCreate, CardDtoView } from '../../dtos/CardDto'
+import { ICardRepo } from '../../../domain/interfaces/repositories/ICardRepo'
 import { CardMapper } from '../../mappers/CardMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class CreateCardUseCase {
   readonly #cardRepo: ICardRepo
@@ -11,7 +12,7 @@ export class CreateCardUseCase {
     this.#cardRepo = cardRepo
   }
 
-  async execute(createCardDto: CreateCardDTO): Promise<ViewCardDTO> {
+  async execute(userContextService: IUserContextService | undefined, createCardDto: CardDtoCreate): Promise<CardDtoView> {
     const card: Card = {
       id: generateUUID(),
       quantity: createCardDto.quantity,
@@ -20,11 +21,11 @@ export class CreateCardUseCase {
       userId: createCardDto.userId,
       productId: createCardDto.productId,
       createdAt: new Date(),
-      createdBy: '',
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newCard = await this.#cardRepo.create(card)
 
-    return CardMapper.toViewCardDTO(newCard)
+    return CardMapper.toCardDtoView(newCard)
   }
 }

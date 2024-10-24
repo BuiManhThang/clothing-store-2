@@ -1,8 +1,8 @@
 import { Token } from '../../domain/entities/Token'
-import { ViewTokenDTO } from '../dtos/TokenDTO'
+import { TokenDtoView } from '../dtos/TokenDto'
 
 export class TokenMapper {
-  static toViewTokenDTO(token: Token): ViewTokenDTO {
+  static toTokenDtoView(token: Token): TokenDtoView {
     return token
   }
 }

@@ -1,5 +1,5 @@
-import { ViewRoleDTO } from '../../dtos/RoleDTO'
-import { IRoleRepo } from '../../interfaces/repositories/IRoleRepo'
+import { RoleDtoView } from '../../dtos/RoleDto'
+import { IRoleRepo } from '../../../domain/interfaces/repositories/IRoleRepo'
 import { RoleMapper } from '../../mappers/RoleMapper'
 
 export class FindRoleByIdUseCase {
@@ -9,9 +9,9 @@ export class FindRoleByIdUseCase {
     this.#roleRepo = roleRepo
   }
 
-  async execute(id: string): Promise<ViewRoleDTO | null> {
+  async execute(id: string): Promise<RoleDtoView | null> {
     const role = await this.#roleRepo.findById(id)
     if (!role) return null
-    return RoleMapper.toViewRoleDTO(role)
+    return RoleMapper.toRoleDtoView(role)
   }
 }

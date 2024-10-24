@@ -93,6 +93,7 @@ async function generateCodeForTable(tableName: string) {
     'createUseCase',
     'updateUseCase',
     'findAllUseCase',
+    'getPaginationUseCase',
     'findByIdUseCase',
     'deleteUseCase',
     'iRepository',
@@ -121,8 +122,8 @@ async function generateMainRouter(tableNames: string[]) {
     tableNames: tableNames.map((tableName) => ({
       TableName: capitalizeFirstLetter(getTableName(tableName)),
       tableName: getTableName(tableName),
-      tableNames: getTableNameMany(tableName),
-      TableNames: capitalizeFirstLetter(getTableNameMany(tableName)),
+      tableNames: getTableNameMany(getTableName(tableName)),
+      TableNames: capitalizeFirstLetter(getTableNameMany(getTableName(tableName))),
     })),
   }
 
@@ -142,6 +143,7 @@ async function generateMainRouter(tableNames: string[]) {
   }
 
   await generateMainRouter(tables)
+  console.log('Done!!!')
 })()
 
 // Tiện ích: Hàm viết hoa chữ cái đầu
@@ -160,7 +162,7 @@ function getFileName(type: string, tableName: string) {
     case 'iRepository':
       return `I${capitalizeFirstLetter(tableName)}Repo`
     case 'dto':
-      return `${capitalizeFirstLetter(tableName)}DTO`
+      return `${capitalizeFirstLetter(tableName)}Dto`
     case 'mapper':
       return `${capitalizeFirstLetter(tableName)}Mapper`
     case 'createUseCase':
@@ -169,6 +171,8 @@ function getFileName(type: string, tableName: string) {
       return `Update${capitalizeFirstLetter(tableName)}UseCase`
     case 'findAllUseCase':
       return `FindAll${capitalizeFirstLetter(getTableNameMany(tableName))}UseCase`
+    case 'getPaginationUseCase':
+      return `Get${capitalizeFirstLetter(tableName)}PaginationUseCase`
     case 'findByIdUseCase':
       return `Find${capitalizeFirstLetter(tableName)}ByIdUseCase`
     case 'deleteUseCase':

@@ -1,8 +1,9 @@
 import { OrderDetail } from '../../../domain/entities/OrderDetail'
 import { NotFoundError } from '../../../shared/errors/NotFoundError'
-import { UpdateOrderDetailDTO, ViewOrderDetailDTO } from '../../dtos/OrderDetailDTO'
-import { IOrderDetailRepo } from '../../interfaces/repositories/IOrderDetailRepo'
+import { OrderDetailDtoUpdate, OrderDetailDtoView } from '../../dtos/OrderDetailDto'
+import { IOrderDetailRepo } from '../../../domain/interfaces/repositories/IOrderDetailRepo'
 import { OrderDetailMapper } from '../../mappers/OrderDetailMapper'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class UpdateOrderDetailUseCase {
   readonly #orderDetailRepo: IOrderDetailRepo
@@ -11,32 +12,32 @@ export class UpdateOrderDetailUseCase {
     this.#orderDetailRepo = orderDetailRepo
   }
 
-  async execute(id: string, updateorderDetailDTO: UpdateOrderDetailDTO): Promise<ViewOrderDetailDTO | null> {
+  async execute(userContextService: IUserContextService | undefined, id: string, updateorderDetailDto: OrderDetailDtoUpdate): Promise<OrderDetailDtoView | null> {
     const oldOrderDetail = await this.#orderDetailRepo.findById(id)
     if (!oldOrderDetail) throw new NotFoundError('')
 
     const orderDetail: OrderDetail = {
       id: oldOrderDetail.id,
-      sizeId: updateorderDetailDTO.sizeId,
-      quantity: updateorderDetailDTO.quantity,
-      price: updateorderDetailDTO.price,
-      orderId: updateorderDetailDTO.orderId,
-      productId: updateorderDetailDTO.productId,
-      colorId: updateorderDetailDTO.colorId,
-      productCode: updateorderDetailDTO.productCode,
-      productName: updateorderDetailDTO.productName,
-      colorCode: updateorderDetailDTO.colorCode,
-      colorName: updateorderDetailDTO.colorName,
-      sizeName: updateorderDetailDTO.sizeName,
+      sizeId: updateorderDetailDto.sizeId,
+      quantity: updateorderDetailDto.quantity,
+      price: updateorderDetailDto.price,
+      orderId: updateorderDetailDto.orderId,
+      productId: updateorderDetailDto.productId,
+      colorId: updateorderDetailDto.colorId,
+      productCode: updateorderDetailDto.productCode,
+      productName: updateorderDetailDto.productName,
+      colorCode: updateorderDetailDto.colorCode,
+      colorName: updateorderDetailDto.colorName,
+      sizeName: updateorderDetailDto.sizeName,
       createdAt: oldOrderDetail.createdAt,
       createdBy: oldOrderDetail.createdBy,
       modifiedAt: new Date(),
-      modifiedBy: '',
+      modifiedBy: userContextService?.getCurrentUserId() || '',
     }
 
     const updatedOrderDetail = await this.#orderDetailRepo.update(id, orderDetail)
 
-    if (updatedOrderDetail) return OrderDetailMapper.toViewOrderDetailDTO(updatedOrderDetail)
+    if (updatedOrderDetail) return OrderDetailMapper.toOrderDetailDtoView(updatedOrderDetail)
     return null
   }
 }

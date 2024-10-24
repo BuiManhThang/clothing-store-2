@@ -1,5 +1,5 @@
-import { ViewCardDTO } from '../../dtos/CardDTO'
-import { ICardRepo } from '../../interfaces/repositories/ICardRepo'
+import { CardDtoView } from '../../dtos/CardDto'
+import { ICardRepo } from '../../../domain/interfaces/repositories/ICardRepo'
 import { CardMapper } from '../../mappers/CardMapper'
 
 export class FindAllCardsUseCase {
@@ -9,8 +9,8 @@ export class FindAllCardsUseCase {
     this.#cardRepo = cardService
   }
 
-  async execute(): Promise<ViewCardDTO[]> {
+  async execute(): Promise<CardDtoView[]> {
     const cards = await this.#cardRepo.findAll()
-    return cards.map((card) => CardMapper.toViewCardDTO(card))
+    return cards.map((card) => CardMapper.toCardDtoView(card))
   }
 }

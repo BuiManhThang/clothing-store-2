@@ -1,4 +1,4 @@
-import { IProductImageRepo } from '../../interfaces/repositories/IProductImageRepo'
+import { IProductImageRepo } from '../../../domain/interfaces/repositories/IProductImageRepo'
 
 export class DeleteProductImageUseCase {
   readonly #productImageRepo: IProductImageRepo

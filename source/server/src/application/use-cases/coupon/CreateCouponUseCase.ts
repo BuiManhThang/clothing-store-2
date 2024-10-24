@@ -1,8 +1,9 @@
 import { Coupon } from '../../../domain/entities/Coupon'
-import { CreateCouponDTO, ViewCouponDTO } from '../../dtos/CouponDTO'
+import { CouponDtoCreate, CouponDtoView } from '../../dtos/CouponDto'
 import { ICouponRepo } from '../../../domain/interfaces/repositories/ICouponRepo'
 import { CouponMapper } from '../../mappers/CouponMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class CreateCouponUseCase {
   readonly #couponRepo: ICouponRepo
@@ -11,7 +12,7 @@ export class CreateCouponUseCase {
     this.#couponRepo = couponRepo
   }
 
-  async execute(createCouponDto: CreateCouponDTO): Promise<ViewCouponDTO> {
+  async execute(userContextService: IUserContextService | undefined, createCouponDto: CouponDtoCreate): Promise<CouponDtoView> {
     const coupon: Coupon = {
       id: generateUUID(),
       percent: createCouponDto.percent,
@@ -20,11 +21,11 @@ export class CreateCouponUseCase {
       description: createCouponDto.description,
       status: createCouponDto.status,
       createdAt: new Date(),
-      createdBy: '',
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newCoupon = await this.#couponRepo.create(coupon)
 
-    return CouponMapper.toViewCouponDTO(newCoupon)
+    return CouponMapper.toCouponDtoView(newCoupon)
   }
 }

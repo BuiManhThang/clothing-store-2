@@ -1,4 +1,4 @@
-import { IRoleRepo } from '../../interfaces/repositories/IRoleRepo'
+import { IRoleRepo } from '../../../domain/interfaces/repositories/IRoleRepo'
 
 export class DeleteRoleUseCase {
   readonly #roleRepo: IRoleRepo

@@ -1,8 +1,8 @@
 import { ProductSize } from '../../domain/entities/ProductSize'
-import { ViewProductSizeDTO } from '../dtos/ProductSizeDTO'
+import { ProductSizeDtoView } from '../dtos/ProductSizeDto'
 
 export class ProductSizeMapper {
-  static toViewProductSizeDTO(productSize: ProductSize): ViewProductSizeDTO {
+  static toProductSizeDtoView(productSize: ProductSize): ProductSizeDtoView {
     return productSize
   }
 }

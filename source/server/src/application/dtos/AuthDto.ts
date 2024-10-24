@@ -1,17 +1,17 @@
-import { ViewUserDTO } from './UserDTO'
+import { UserDtoView } from './UserDto'
 
-export interface RegisterUserDTO {
+export interface RegisterUserDto {
   email: string
   password: string
 }
 
-export interface LoginDTO {
+export interface LoginDto {
   email: string
   password: string
 }
 
-export interface AuthResponseDTO {
-  user: ViewUserDTO
+export interface AuthResponseDto {
+  user: UserDtoView
   accessToken: string
   refreshToken: string
 }

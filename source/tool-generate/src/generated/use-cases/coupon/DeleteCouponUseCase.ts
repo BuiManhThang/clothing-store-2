@@ -1,4 +1,4 @@
-import { ICouponRepo } from '../../interfaces/repositories/ICouponRepo'
+import { ICouponRepo } from '../../../domain/interfaces/repositories/ICouponRepo'
 
 export class DeleteCouponUseCase {
   readonly #couponRepo: ICouponRepo

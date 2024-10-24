@@ -1,8 +1,9 @@
 import { ReceiptDetail } from '../../../domain/entities/ReceiptDetail'
 import { NotFoundError } from '../../../shared/errors/NotFoundError'
-import { UpdateReceiptDetailDTO, ViewReceiptDetailDTO } from '../../dtos/ReceiptDetailDTO'
-import { IReceiptDetailRepo } from '../../interfaces/repositories/IReceiptDetailRepo'
+import { ReceiptDetailDtoUpdate, ReceiptDetailDtoView } from '../../dtos/ReceiptDetailDto'
+import { IReceiptDetailRepo } from '../../../domain/interfaces/repositories/IReceiptDetailRepo'
 import { ReceiptDetailMapper } from '../../mappers/ReceiptDetailMapper'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class UpdateReceiptDetailUseCase {
   readonly #receiptDetailRepo: IReceiptDetailRepo
@@ -11,32 +12,32 @@ export class UpdateReceiptDetailUseCase {
     this.#receiptDetailRepo = receiptDetailRepo
   }
 
-  async execute(id: string, updatereceiptDetailDTO: UpdateReceiptDetailDTO): Promise<ViewReceiptDetailDTO | null> {
+  async execute(userContextService: IUserContextService | undefined, id: string, updatereceiptDetailDto: ReceiptDetailDtoUpdate): Promise<ReceiptDetailDtoView | null> {
     const oldReceiptDetail = await this.#receiptDetailRepo.findById(id)
     if (!oldReceiptDetail) throw new NotFoundError('')
 
     const receiptDetail: ReceiptDetail = {
       id: oldReceiptDetail.id,
-      sizeId: updatereceiptDetailDTO.sizeId,
-      quantity: updatereceiptDetailDTO.quantity,
-      price: updatereceiptDetailDTO.price,
-      receiptId: updatereceiptDetailDTO.receiptId,
-      productId: updatereceiptDetailDTO.productId,
-      colorId: updatereceiptDetailDTO.colorId,
-      productCode: updatereceiptDetailDTO.productCode,
-      productName: updatereceiptDetailDTO.productName,
-      colorCode: updatereceiptDetailDTO.colorCode,
-      colorName: updatereceiptDetailDTO.colorName,
-      sizeName: updatereceiptDetailDTO.sizeName,
+      sizeId: updatereceiptDetailDto.sizeId,
+      quantity: updatereceiptDetailDto.quantity,
+      price: updatereceiptDetailDto.price,
+      receiptId: updatereceiptDetailDto.receiptId,
+      productId: updatereceiptDetailDto.productId,
+      colorId: updatereceiptDetailDto.colorId,
+      productCode: updatereceiptDetailDto.productCode,
+      productName: updatereceiptDetailDto.productName,
+      colorCode: updatereceiptDetailDto.colorCode,
+      colorName: updatereceiptDetailDto.colorName,
+      sizeName: updatereceiptDetailDto.sizeName,
       createdAt: oldReceiptDetail.createdAt,
       createdBy: oldReceiptDetail.createdBy,
       modifiedAt: new Date(),
-      modifiedBy: '',
+      modifiedBy: userContextService?.getCurrentUserId() || '',
     }
 
     const updatedReceiptDetail = await this.#receiptDetailRepo.update(id, receiptDetail)
 
-    if (updatedReceiptDetail) return ReceiptDetailMapper.toViewReceiptDetailDTO(updatedReceiptDetail)
+    if (updatedReceiptDetail) return ReceiptDetailMapper.toReceiptDetailDtoView(updatedReceiptDetail)
     return null
   }
 }

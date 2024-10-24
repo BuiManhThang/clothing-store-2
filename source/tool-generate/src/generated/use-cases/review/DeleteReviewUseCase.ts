@@ -1,4 +1,4 @@
-import { IReviewRepo } from '../../interfaces/repositories/IReviewRepo'
+import { IReviewRepo } from '../../../domain/interfaces/repositories/IReviewRepo'
 
 export class DeleteReviewUseCase {
   readonly #reviewRepo: IReviewRepo

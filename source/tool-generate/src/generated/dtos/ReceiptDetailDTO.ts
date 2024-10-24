@@ -1,4 +1,4 @@
-export interface CreateReceiptDetailDTO {
+export interface ReceiptDetailDtoCreate {
   sizeId: string;
   quantity: number;
   price: any;
@@ -12,7 +12,7 @@ export interface CreateReceiptDetailDTO {
   sizeName: string;
 }
 
-export interface UpdateReceiptDetailDTO {
+export interface ReceiptDetailDtoUpdate {
   sizeId: string;
   quantity: number;
   price: any;
@@ -26,7 +26,7 @@ export interface UpdateReceiptDetailDTO {
   sizeName: string;
 }
 
-export interface ViewReceiptDetailDTO {
+export interface ReceiptDetailDtoView {
   sizeId: string;
   quantity: number;
   price: any;
@@ -38,4 +38,8 @@ export interface ViewReceiptDetailDTO {
   colorCode: string;
   colorName: string;
   sizeName: string;
+  createdAt: Date
+  createdBy: string
+  modifiedAt?: Date
+  modifiedBy?: string
 }

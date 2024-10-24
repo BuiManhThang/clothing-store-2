@@ -1,8 +1,9 @@
 import { ReceiptDetail } from '../../../domain/entities/ReceiptDetail'
-import { CreateReceiptDetailDTO, ViewReceiptDetailDTO } from '../../dtos/ReceiptDetailDTO'
-import { IReceiptDetailRepo } from '../../interfaces/repositories/IReceiptDetailRepo'
+import { ReceiptDetailDtoCreate, ReceiptDetailDtoView } from '../../dtos/ReceiptDetailDto'
+import { IReceiptDetailRepo } from '../../../domain/interfaces/repositories/IReceiptDetailRepo'
 import { ReceiptDetailMapper } from '../../mappers/ReceiptDetailMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class CreateReceiptDetailUseCase {
   readonly #receiptDetailRepo: IReceiptDetailRepo
@@ -11,7 +12,7 @@ export class CreateReceiptDetailUseCase {
     this.#receiptDetailRepo = receiptDetailRepo
   }
 
-  async execute(createReceiptDetailDto: CreateReceiptDetailDTO): Promise<ViewReceiptDetailDTO> {
+  async execute(userContextService: IUserContextService | undefined, createReceiptDetailDto: ReceiptDetailDtoCreate): Promise<ReceiptDetailDtoView> {
     const receiptDetail: ReceiptDetail = {
       id: generateUUID(),
       sizeId: createReceiptDetailDto.sizeId,
@@ -26,11 +27,11 @@ export class CreateReceiptDetailUseCase {
       colorName: createReceiptDetailDto.colorName,
       sizeName: createReceiptDetailDto.sizeName,
       createdAt: new Date(),
-      createdBy: '',
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newReceiptDetail = await this.#receiptDetailRepo.create(receiptDetail)
 
-    return ReceiptDetailMapper.toViewReceiptDetailDTO(newReceiptDetail)
+    return ReceiptDetailMapper.toReceiptDetailDtoView(newReceiptDetail)
   }
 }

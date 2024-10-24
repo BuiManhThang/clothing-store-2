@@ -1,8 +1,9 @@
 import { Card } from '../../../domain/entities/Card'
 import { NotFoundError } from '../../../shared/errors/NotFoundError'
-import { UpdateCardDTO, ViewCardDTO } from '../../dtos/CardDTO'
+import { CardDtoUpdate, CardDtoView } from '../../dtos/CardDto'
 import { ICardRepo } from '../../../domain/interfaces/repositories/ICardRepo'
 import { CardMapper } from '../../mappers/CardMapper'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class UpdateCardUseCase {
   readonly #cardRepo: ICardRepo
@@ -11,26 +12,26 @@ export class UpdateCardUseCase {
     this.#cardRepo = cardRepo
   }
 
-  async execute(id: string, updatecardDTO: UpdateCardDTO): Promise<ViewCardDTO | null> {
+  async execute(userContextService: IUserContextService | undefined, id: string, updatecardDto: CardDtoUpdate): Promise<CardDtoView | null> {
     const oldCard = await this.#cardRepo.findById(id)
     if (!oldCard) throw new NotFoundError('')
 
     const card: Card = {
       id: oldCard.id,
-      quantity: updatecardDTO.quantity,
-      colorId: updatecardDTO.colorId,
-      sizeId: updatecardDTO.sizeId,
-      userId: updatecardDTO.userId,
-      productId: updatecardDTO.productId,
+      quantity: updatecardDto.quantity,
+      colorId: updatecardDto.colorId,
+      sizeId: updatecardDto.sizeId,
+      userId: updatecardDto.userId,
+      productId: updatecardDto.productId,
       createdAt: oldCard.createdAt,
       createdBy: oldCard.createdBy,
       modifiedAt: new Date(),
-      modifiedBy: '',
+      modifiedBy: userContextService?.getCurrentUserId() || '',
     }
 
     const updatedCard = await this.#cardRepo.update(id, card)
 
-    if (updatedCard) return CardMapper.toViewCardDTO(updatedCard)
+    if (updatedCard) return CardMapper.toCardDtoView(updatedCard)
     return null
   }
 }

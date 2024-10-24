@@ -1,7 +1,11 @@
 import { Router } from 'express'
 import { RoleController } from '../controllers/RoleController'
+import { AuthMiddleware } from '../../shared/middlewares/authMiddleware'
 
-export const createRoleRouter = (roleController: RoleController) => {
+export const createRoleRouter = (
+  roleController: RoleController,
+  authMiddleware: AuthMiddleware
+) => {
   const router = Router()
 
   router.get('/', (req, res, next) => roleController.findAll(req, res, next))

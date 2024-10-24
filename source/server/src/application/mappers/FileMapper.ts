@@ -1,8 +1,8 @@
 import { File } from '../../domain/entities/File'
-import { ViewFileDTO } from '../dtos/FileDTO'
+import { FileDtoView } from '../dtos/FileDto'
 
 export class FileMapper {
-  static toViewFileDTO(file: File): ViewFileDTO {
+  static toFileDtoView(file: File): FileDtoView {
     return file
   }
 }

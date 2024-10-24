@@ -1,8 +1,8 @@
 import { Card } from '../../domain/entities/Card'
-import { ViewCardDTO } from '../dtos/CardDTO'
+import { CardDtoView } from '../dtos/CardDto'
 
 export class CardMapper {
-  static toViewCardDTO(card: Card): ViewCardDTO {
+  static toCardDtoView(card: Card): CardDtoView {
     return card
   }
 }

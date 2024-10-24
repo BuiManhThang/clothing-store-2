@@ -1,5 +1,5 @@
-import { ViewCouponDTO } from '../../dtos/CouponDTO'
-import { ICouponRepo } from '../../interfaces/repositories/ICouponRepo'
+import { CouponDtoView } from '../../dtos/CouponDto'
+import { ICouponRepo } from '../../../domain/interfaces/repositories/ICouponRepo'
 import { CouponMapper } from '../../mappers/CouponMapper'
 
 export class FindCouponByIdUseCase {
@@ -9,9 +9,9 @@ export class FindCouponByIdUseCase {
     this.#couponRepo = couponRepo
   }
 
-  async execute(id: string): Promise<ViewCouponDTO | null> {
+  async execute(id: string): Promise<CouponDtoView | null> {
     const coupon = await this.#couponRepo.findById(id)
     if (!coupon) return null
-    return CouponMapper.toViewCouponDTO(coupon)
+    return CouponMapper.toCouponDtoView(coupon)
   }
 }

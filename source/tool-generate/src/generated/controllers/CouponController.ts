@@ -1,10 +1,11 @@
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { CreateCouponUseCase } from '../../application/use-cases/coupon/CreateCouponUseCase'
 import { DeleteCouponUseCase } from '../../application/use-cases/coupon/DeleteCouponUseCase'
 import { FindAllCouponsUseCase } from '../../application/use-cases/coupon/FindAllCouponsUseCase'
+import { GetCouponPaginationUseCase } from '../../application/use-cases/coupon/GetCouponPaginationUseCase'
 import { FindCouponByIdUseCase } from '../../application/use-cases/coupon/FindCouponByIdUseCase'
 import { UpdateCouponUseCase } from '../../application/use-cases/coupon/UpdateCouponUseCase'
-import { CreateCouponDTO, UpdateCouponDTO } from '../../application/dtos/CouponDTO'
+import { CouponDtoCreate, CouponDtoUpdate } from '../../application/dtos/CouponDto'
 import { BaseController } from './BaseController'
 import { HTTP_STATUS } from '../../shared/constants/httpStatus'
 
@@ -13,6 +14,7 @@ export class CouponController extends BaseController {
   readonly #updateCouponUseCase: UpdateCouponUseCase
   readonly #findCouponByIdUseCase: FindCouponByIdUseCase
   readonly #findAllCouponsUseCase: FindAllCouponsUseCase
+  readonly #getPaginationCouponUseCase: GetCouponPaginationUseCase
   readonly #deleteCouponUseCase: DeleteCouponUseCase
 
   constructor(
@@ -20,6 +22,7 @@ export class CouponController extends BaseController {
     updateCouponUseCase: UpdateCouponUseCase,
     findCouponByIdUseCase: FindCouponByIdUseCase,
     findAllCouponsUseCase: FindAllCouponsUseCase,
+    getPaginationCouponUseCase: GetCouponPaginationUseCase,
     deleteCouponUseCase: DeleteCouponUseCase
   ) {
     super()
@@ -27,33 +30,34 @@ export class CouponController extends BaseController {
     this.#updateCouponUseCase = updateCouponUseCase
     this.#findCouponByIdUseCase = findCouponByIdUseCase
     this.#findAllCouponsUseCase = findAllCouponsUseCase
+    this.#getPaginationCouponUseCase = getPaginationCouponUseCase
     this.#deleteCouponUseCase = deleteCouponUseCase
   }
 
-  async create(req: Request, res: Response) {
-    const createCouponDTO: CreateCouponDTO = req.body
+  async create(req: Request, res: Response, next: NextFunction) {
+    const createCouponDto: CouponDtoCreate = req.body
 
     try {
-      const createdCoupon = await this.#createCouponUseCase.execute(createCouponDTO)
+      const createdCoupon = await this.#createCouponUseCase.execute(req.userContextService, createCouponDto)
       return res.status(HTTP_STATUS.CREATED).json(createdCoupon)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const couponId = req.params.id
-    const updateCouponDTO: UpdateCouponDTO = req.body
+    const updateCouponDto: CouponDtoUpdate = req.body
 
     try {
-      const updatedCoupon = await this.#updateCouponUseCase.execute(couponId, updateCouponDTO)
+      const updatedCoupon = await this.#updateCouponUseCase.execute(req.userContextService, couponId, updateCouponDto)
       return res.status(HTTP_STATUS.OK).json(updatedCoupon)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findById(req: Request, res: Response) {
+  async findById(req: Request, res: Response, next: NextFunction) {
     const couponId = req.params.id
 
     try {
@@ -64,21 +68,38 @@ export class CouponController extends BaseController {
 
       return res.status(HTTP_STATUS.OK).json(coupon)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findAll(_req: Request, res: Response) {
+  async findAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const coupons = await this.#findAllCouponsUseCase.execute()
 
       return res.status(HTTP_STATUS.OK).json(coupons)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async delete(req: Request, res: Response) {
+  async getPagination(req: Request, res: Response, next: NextFunction) {
+    try {
+      const pageSize = req.query.pageSize ? parseInt(req.query.pageSize.toString()) : undefined
+      const pageIndex = req.query.pageIndex ? parseInt(req.query.pageIndex.toString()) : undefined
+      const paginationResult = await this.#getPaginationCouponUseCase.execute(
+        pageSize,
+        pageIndex,
+        req.query.sort?.toString(),
+        req.query.sortDirection?.toString(),
+      )
+
+      return res.status(HTTP_STATUS.OK).json(paginationResult)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction) {
     const couponId = req.params.id
 
     try {
@@ -86,7 +107,7 @@ export class CouponController extends BaseController {
 
       return res.sendStatus(HTTP_STATUS.NO_CONTENT)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 }

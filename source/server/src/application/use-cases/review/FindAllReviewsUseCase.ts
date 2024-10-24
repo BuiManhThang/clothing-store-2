@@ -1,4 +1,4 @@
-import { ViewReviewDTO } from '../../dtos/ReviewDTO'
+import { ReviewDtoView } from '../../dtos/ReviewDto'
 import { IReviewRepo } from '../../../domain/interfaces/repositories/IReviewRepo'
 import { ReviewMapper } from '../../mappers/ReviewMapper'
 
@@ -9,8 +9,8 @@ export class FindAllReviewsUseCase {
     this.#reviewRepo = reviewService
   }
 
-  async execute(): Promise<ViewReviewDTO[]> {
+  async execute(): Promise<ReviewDtoView[]> {
     const reviews = await this.#reviewRepo.findAll()
-    return reviews.map((review) => ReviewMapper.toViewReviewDTO(review))
+    return reviews.map((review) => ReviewMapper.toReviewDtoView(review))
   }
 }

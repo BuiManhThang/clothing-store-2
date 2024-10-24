@@ -1,14 +1,18 @@
-export interface CreateFileDTO {
+export interface FileDtoCreate {
   name: string;
   status: string;
 }
 
-export interface UpdateFileDTO {
+export interface FileDtoUpdate {
   name: string;
   status: string;
 }
 
-export interface ViewFileDTO {
+export interface FileDtoView {
   name: string;
   status: string;
+  createdAt: Date
+  createdBy: string
+  modifiedAt?: Date
+  modifiedBy?: string
 }

@@ -48,19 +48,19 @@ export class CreateRoleUseCase {
 
   async execute(
     userContextService: IUserContextService | undefined,
-    createRoleDto: RoleDtoCreate
+    roleDtoCreate: RoleDtoCreate
   ): Promise<RoleDtoView> {
-    const validateResult = validate(createRoleDto, validateConditions)
+    const validateResult = validate(roleDtoCreate, validateConditions)
     if (validateResult.length) {
       throw new BadRequestError('', validateResult)
     }
 
     const role: Role = {
       id: generateUUID(),
-      code: createRoleDto.code,
-      name: createRoleDto.name,
-      roleDetails: createRoleDto.roleDetails,
-      description: createRoleDto.description,
+      code: roleDtoCreate.code,
+      name: roleDtoCreate.name,
+      roleDetails: roleDtoCreate.roleDetails,
+      description: roleDtoCreate.description,
       createdAt: new Date(),
       createdBy: userContextService?.getCurrentUserId() || '',
     }

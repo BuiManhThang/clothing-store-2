@@ -1,4 +1,4 @@
-import { IProductSizeRepo } from '../../interfaces/repositories/IProductSizeRepo'
+import { IProductSizeRepo } from '../../../domain/interfaces/repositories/IProductSizeRepo'
 
 export class DeleteProductSizeUseCase {
   readonly #productSizeRepo: IProductSizeRepo

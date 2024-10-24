@@ -1,10 +1,11 @@
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { CreateReceiptDetailUseCase } from '../../application/use-cases/receiptDetail/CreateReceiptDetailUseCase'
 import { DeleteReceiptDetailUseCase } from '../../application/use-cases/receiptDetail/DeleteReceiptDetailUseCase'
 import { FindAllReceiptDetailsUseCase } from '../../application/use-cases/receiptDetail/FindAllReceiptDetailsUseCase'
+import { GetReceiptDetailPaginationUseCase } from '../../application/use-cases/receiptDetail/GetReceiptDetailPaginationUseCase'
 import { FindReceiptDetailByIdUseCase } from '../../application/use-cases/receiptDetail/FindReceiptDetailByIdUseCase'
 import { UpdateReceiptDetailUseCase } from '../../application/use-cases/receiptDetail/UpdateReceiptDetailUseCase'
-import { CreateReceiptDetailDTO, UpdateReceiptDetailDTO } from '../../application/dtos/ReceiptDetailDTO'
+import { ReceiptDetailDtoCreate, ReceiptDetailDtoUpdate } from '../../application/dtos/ReceiptDetailDto'
 import { BaseController } from './BaseController'
 import { HTTP_STATUS } from '../../shared/constants/httpStatus'
 
@@ -13,6 +14,7 @@ export class ReceiptDetailController extends BaseController {
   readonly #updateReceiptDetailUseCase: UpdateReceiptDetailUseCase
   readonly #findReceiptDetailByIdUseCase: FindReceiptDetailByIdUseCase
   readonly #findAllReceiptDetailsUseCase: FindAllReceiptDetailsUseCase
+  readonly #getPaginationReceiptDetailUseCase: GetReceiptDetailPaginationUseCase
   readonly #deleteReceiptDetailUseCase: DeleteReceiptDetailUseCase
 
   constructor(
@@ -20,6 +22,7 @@ export class ReceiptDetailController extends BaseController {
     updateReceiptDetailUseCase: UpdateReceiptDetailUseCase,
     findReceiptDetailByIdUseCase: FindReceiptDetailByIdUseCase,
     findAllReceiptDetailsUseCase: FindAllReceiptDetailsUseCase,
+    getPaginationReceiptDetailUseCase: GetReceiptDetailPaginationUseCase,
     deleteReceiptDetailUseCase: DeleteReceiptDetailUseCase
   ) {
     super()
@@ -27,33 +30,34 @@ export class ReceiptDetailController extends BaseController {
     this.#updateReceiptDetailUseCase = updateReceiptDetailUseCase
     this.#findReceiptDetailByIdUseCase = findReceiptDetailByIdUseCase
     this.#findAllReceiptDetailsUseCase = findAllReceiptDetailsUseCase
+    this.#getPaginationReceiptDetailUseCase = getPaginationReceiptDetailUseCase
     this.#deleteReceiptDetailUseCase = deleteReceiptDetailUseCase
   }
 
-  async create(req: Request, res: Response) {
-    const createReceiptDetailDTO: CreateReceiptDetailDTO = req.body
+  async create(req: Request, res: Response, next: NextFunction) {
+    const createReceiptDetailDto: ReceiptDetailDtoCreate = req.body
 
     try {
-      const createdReceiptDetail = await this.#createReceiptDetailUseCase.execute(createReceiptDetailDTO)
+      const createdReceiptDetail = await this.#createReceiptDetailUseCase.execute(req.userContextService, createReceiptDetailDto)
       return res.status(HTTP_STATUS.CREATED).json(createdReceiptDetail)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const receiptDetailId = req.params.id
-    const updateReceiptDetailDTO: UpdateReceiptDetailDTO = req.body
+    const updateReceiptDetailDto: ReceiptDetailDtoUpdate = req.body
 
     try {
-      const updatedReceiptDetail = await this.#updateReceiptDetailUseCase.execute(receiptDetailId, updateReceiptDetailDTO)
+      const updatedReceiptDetail = await this.#updateReceiptDetailUseCase.execute(req.userContextService, receiptDetailId, updateReceiptDetailDto)
       return res.status(HTTP_STATUS.OK).json(updatedReceiptDetail)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findById(req: Request, res: Response) {
+  async findById(req: Request, res: Response, next: NextFunction) {
     const receiptDetailId = req.params.id
 
     try {
@@ -64,21 +68,38 @@ export class ReceiptDetailController extends BaseController {
 
       return res.status(HTTP_STATUS.OK).json(receiptDetail)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findAll(_req: Request, res: Response) {
+  async findAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const receiptDetails = await this.#findAllReceiptDetailsUseCase.execute()
 
       return res.status(HTTP_STATUS.OK).json(receiptDetails)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async delete(req: Request, res: Response) {
+  async getPagination(req: Request, res: Response, next: NextFunction) {
+    try {
+      const pageSize = req.query.pageSize ? parseInt(req.query.pageSize.toString()) : undefined
+      const pageIndex = req.query.pageIndex ? parseInt(req.query.pageIndex.toString()) : undefined
+      const paginationResult = await this.#getPaginationReceiptDetailUseCase.execute(
+        pageSize,
+        pageIndex,
+        req.query.sort?.toString(),
+        req.query.sortDirection?.toString(),
+      )
+
+      return res.status(HTTP_STATUS.OK).json(paginationResult)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction) {
     const receiptDetailId = req.params.id
 
     try {
@@ -86,7 +107,7 @@ export class ReceiptDetailController extends BaseController {
 
       return res.sendStatus(HTTP_STATUS.NO_CONTENT)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 }

@@ -1,4 +1,4 @@
-export interface CreateProductColorDTO {
+export interface ProductColorDtoCreate {
   order: number;
   productId: string;
   status: string;
@@ -7,7 +7,7 @@ export interface CreateProductColorDTO {
   description: string;
 }
 
-export interface UpdateProductColorDTO {
+export interface ProductColorDtoUpdate {
   order: number;
   productId: string;
   status: string;
@@ -16,11 +16,15 @@ export interface UpdateProductColorDTO {
   description: string;
 }
 
-export interface ViewProductColorDTO {
+export interface ProductColorDtoView {
   order: number;
   productId: string;
   status: string;
   code: string;
   name: string;
   description: string;
+  createdAt: Date
+  createdBy: string
+  modifiedAt?: Date
+  modifiedBy?: string
 }

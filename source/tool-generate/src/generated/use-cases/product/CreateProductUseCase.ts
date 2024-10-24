@@ -1,8 +1,9 @@
 import { Product } from '../../../domain/entities/Product'
-import { CreateProductDTO, ViewProductDTO } from '../../dtos/ProductDTO'
-import { IProductRepo } from '../../interfaces/repositories/IProductRepo'
+import { ProductDtoCreate, ProductDtoView } from '../../dtos/ProductDto'
+import { IProductRepo } from '../../../domain/interfaces/repositories/IProductRepo'
 import { ProductMapper } from '../../mappers/ProductMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class CreateProductUseCase {
   readonly #productRepo: IProductRepo
@@ -11,7 +12,7 @@ export class CreateProductUseCase {
     this.#productRepo = productRepo
   }
 
-  async execute(createProductDto: CreateProductDTO): Promise<ViewProductDTO> {
+  async execute(userContextService: IUserContextService | undefined, createProductDto: ProductDtoCreate): Promise<ProductDtoView> {
     const product: Product = {
       id: generateUUID(),
       categoryId: createProductDto.categoryId,
@@ -21,11 +22,11 @@ export class CreateProductUseCase {
       description: createProductDto.description,
       status: createProductDto.status,
       createdAt: new Date(),
-      createdBy: '',
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newProduct = await this.#productRepo.create(product)
 
-    return ProductMapper.toViewProductDTO(newProduct)
+    return ProductMapper.toProductDtoView(newProduct)
   }
 }

@@ -1,4 +1,4 @@
-export interface CreateCardDTO {
+export interface CardDtoCreate {
   quantity: number;
   colorId: string;
   sizeId: string;
@@ -6,7 +6,7 @@ export interface CreateCardDTO {
   productId: string;
 }
 
-export interface UpdateCardDTO {
+export interface CardDtoUpdate {
   quantity: number;
   colorId: string;
   sizeId: string;
@@ -14,10 +14,14 @@ export interface UpdateCardDTO {
   productId: string;
 }
 
-export interface ViewCardDTO {
+export interface CardDtoView {
   quantity: number;
   colorId: string;
   sizeId: string;
   userId: string;
   productId: string;
+  createdAt: Date
+  createdBy: string
+  modifiedAt?: Date
+  modifiedBy?: string
 }

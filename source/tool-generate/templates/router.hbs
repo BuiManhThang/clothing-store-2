@@ -1,14 +1,16 @@
 import { Router } from 'express'
 import { {{EntityName}}Controller } from '../controllers/{{EntityName}}Controller'
+import { AuthMiddleware } from '../../shared/middlewares/authMiddleware'
 
-export const create{{EntityName}}Router = ({{entityName}}Controller: {{EntityName}}Controller) => {
+export const create{{EntityName}}Router = ({{entityName}}Controller: {{EntityName}}Controller, authMiddleware: AuthMiddleware) => {
   const router = Router()
 
-  router.get('/', (req, res) => {{entityName}}Controller.findAll(req, res))
-  router.get('/:id', (req, res) => {{entityName}}Controller.findById(req, res))
-  router.post('/', (req, res) => {{entityName}}Controller.create(req, res))
-  router.put('/:id', (req, res) => {{entityName}}Controller.update(req, res))
-  router.delete('/:id', (req, res) => {{entityName}}Controller.delete(req, res))
+  router.get('/', (req, res, next) => {{entityName}}Controller.findAll(req, res, next))
+  router.get('/pagination', (req, res, next) => {{entityName}}Controller.getPagination(req, res, next))
+  router.get('/:id', (req, res, next) => {{entityName}}Controller.findById(req, res, next))
+  router.post('/', (req, res, next) => {{entityName}}Controller.create(req, res, next))
+  router.put('/:id', (req, res, next) => {{entityName}}Controller.update(req, res, next))
+  router.delete('/:id', (req, res, next) => {{entityName}}Controller.delete(req, res, next))
 
   return router
 }

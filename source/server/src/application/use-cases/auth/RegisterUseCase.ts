@@ -1,5 +1,5 @@
-import { RegisterUserDTO } from '../../dtos/AuthDto'
-import { IAuthService } from '../../interfaces/services/IAuthService'
+import { RegisterUserDto } from '../../dtos/AuthDto'
+import { IAuthService } from '../../interfaces/IAuthService'
 
 export class RegisterUseCase {
   readonly #authService: IAuthService
@@ -7,7 +7,7 @@ export class RegisterUseCase {
     this.#authService = authService
   }
 
-  async execute(registerUserDto: RegisterUserDTO) {
+  async execute(registerUserDto: RegisterUserDto) {
     return await this.#authService.register(registerUserDto)
   }
 }

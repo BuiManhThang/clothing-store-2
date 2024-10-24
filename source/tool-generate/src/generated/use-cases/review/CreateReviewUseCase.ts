@@ -1,8 +1,9 @@
 import { Review } from '../../../domain/entities/Review'
-import { CreateReviewDTO, ViewReviewDTO } from '../../dtos/ReviewDTO'
-import { IReviewRepo } from '../../interfaces/repositories/IReviewRepo'
+import { ReviewDtoCreate, ReviewDtoView } from '../../dtos/ReviewDto'
+import { IReviewRepo } from '../../../domain/interfaces/repositories/IReviewRepo'
 import { ReviewMapper } from '../../mappers/ReviewMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class CreateReviewUseCase {
   readonly #reviewRepo: IReviewRepo
@@ -11,7 +12,7 @@ export class CreateReviewUseCase {
     this.#reviewRepo = reviewRepo
   }
 
-  async execute(createReviewDto: CreateReviewDTO): Promise<ViewReviewDTO> {
+  async execute(userContextService: IUserContextService | undefined, createReviewDto: ReviewDtoCreate): Promise<ReviewDtoView> {
     const review: Review = {
       id: generateUUID(),
       score: createReviewDto.score,
@@ -19,11 +20,11 @@ export class CreateReviewUseCase {
       productId: createReviewDto.productId,
       content: createReviewDto.content,
       createdAt: new Date(),
-      createdBy: '',
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newReview = await this.#reviewRepo.create(review)
 
-    return ReviewMapper.toViewReviewDTO(newReview)
+    return ReviewMapper.toReviewDtoView(newReview)
   }
 }

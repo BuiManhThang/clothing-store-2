@@ -1,5 +1,5 @@
-import { ViewCategoryDTO } from '../../dtos/CategoryDTO'
-import { ICategoryRepo } from '../../interfaces/repositories/ICategoryRepo'
+import { CategoryDtoView } from '../../dtos/CategoryDto'
+import { ICategoryRepo } from '../../../domain/interfaces/repositories/ICategoryRepo'
 import { CategoryMapper } from '../../mappers/CategoryMapper'
 
 export class FindCategoryByIdUseCase {
@@ -9,9 +9,9 @@ export class FindCategoryByIdUseCase {
     this.#categoryRepo = categoryRepo
   }
 
-  async execute(id: string): Promise<ViewCategoryDTO | null> {
+  async execute(id: string): Promise<CategoryDtoView | null> {
     const category = await this.#categoryRepo.findById(id)
     if (!category) return null
-    return CategoryMapper.toViewCategoryDTO(category)
+    return CategoryMapper.toCategoryDtoView(category)
   }
 }

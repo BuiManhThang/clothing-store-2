@@ -1,10 +1,11 @@
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { CreateOrderUseCase } from '../../application/use-cases/order/CreateOrderUseCase'
 import { DeleteOrderUseCase } from '../../application/use-cases/order/DeleteOrderUseCase'
 import { FindAllOrdersUseCase } from '../../application/use-cases/order/FindAllOrdersUseCase'
+import { GetOrderPaginationUseCase } from '../../application/use-cases/order/GetOrderPaginationUseCase'
 import { FindOrderByIdUseCase } from '../../application/use-cases/order/FindOrderByIdUseCase'
 import { UpdateOrderUseCase } from '../../application/use-cases/order/UpdateOrderUseCase'
-import { CreateOrderDTO, UpdateOrderDTO } from '../../application/dtos/OrderDTO'
+import { OrderDtoCreate, OrderDtoUpdate } from '../../application/dtos/OrderDto'
 import { BaseController } from './BaseController'
 import { HTTP_STATUS } from '../../shared/constants/httpStatus'
 
@@ -13,6 +14,7 @@ export class OrderController extends BaseController {
   readonly #updateOrderUseCase: UpdateOrderUseCase
   readonly #findOrderByIdUseCase: FindOrderByIdUseCase
   readonly #findAllOrdersUseCase: FindAllOrdersUseCase
+  readonly #getPaginationOrderUseCase: GetOrderPaginationUseCase
   readonly #deleteOrderUseCase: DeleteOrderUseCase
 
   constructor(
@@ -20,6 +22,7 @@ export class OrderController extends BaseController {
     updateOrderUseCase: UpdateOrderUseCase,
     findOrderByIdUseCase: FindOrderByIdUseCase,
     findAllOrdersUseCase: FindAllOrdersUseCase,
+    getPaginationOrderUseCase: GetOrderPaginationUseCase,
     deleteOrderUseCase: DeleteOrderUseCase
   ) {
     super()
@@ -27,33 +30,34 @@ export class OrderController extends BaseController {
     this.#updateOrderUseCase = updateOrderUseCase
     this.#findOrderByIdUseCase = findOrderByIdUseCase
     this.#findAllOrdersUseCase = findAllOrdersUseCase
+    this.#getPaginationOrderUseCase = getPaginationOrderUseCase
     this.#deleteOrderUseCase = deleteOrderUseCase
   }
 
-  async create(req: Request, res: Response) {
-    const createOrderDTO: CreateOrderDTO = req.body
+  async create(req: Request, res: Response, next: NextFunction) {
+    const createOrderDto: OrderDtoCreate = req.body
 
     try {
-      const createdOrder = await this.#createOrderUseCase.execute(createOrderDTO)
+      const createdOrder = await this.#createOrderUseCase.execute(req.userContextService, createOrderDto)
       return res.status(HTTP_STATUS.CREATED).json(createdOrder)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const orderId = req.params.id
-    const updateOrderDTO: UpdateOrderDTO = req.body
+    const updateOrderDto: OrderDtoUpdate = req.body
 
     try {
-      const updatedOrder = await this.#updateOrderUseCase.execute(orderId, updateOrderDTO)
+      const updatedOrder = await this.#updateOrderUseCase.execute(req.userContextService, orderId, updateOrderDto)
       return res.status(HTTP_STATUS.OK).json(updatedOrder)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findById(req: Request, res: Response) {
+  async findById(req: Request, res: Response, next: NextFunction) {
     const orderId = req.params.id
 
     try {
@@ -64,21 +68,38 @@ export class OrderController extends BaseController {
 
       return res.status(HTTP_STATUS.OK).json(order)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findAll(_req: Request, res: Response) {
+  async findAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const orders = await this.#findAllOrdersUseCase.execute()
 
       return res.status(HTTP_STATUS.OK).json(orders)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async delete(req: Request, res: Response) {
+  async getPagination(req: Request, res: Response, next: NextFunction) {
+    try {
+      const pageSize = req.query.pageSize ? parseInt(req.query.pageSize.toString()) : undefined
+      const pageIndex = req.query.pageIndex ? parseInt(req.query.pageIndex.toString()) : undefined
+      const paginationResult = await this.#getPaginationOrderUseCase.execute(
+        pageSize,
+        pageIndex,
+        req.query.sort?.toString(),
+        req.query.sortDirection?.toString(),
+      )
+
+      return res.status(HTTP_STATUS.OK).json(paginationResult)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction) {
     const orderId = req.params.id
 
     try {
@@ -86,7 +107,7 @@ export class OrderController extends BaseController {
 
       return res.sendStatus(HTTP_STATUS.NO_CONTENT)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 }

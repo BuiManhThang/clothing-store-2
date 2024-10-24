@@ -1,4 +1,4 @@
-import { IUserRepo } from '../../interfaces/repositories/IUserRepo'
+import { IUserRepo } from '../../../domain/interfaces/repositories/IUserRepo'
 
 export class DeleteUserUseCase {
   readonly #userRepo: IUserRepo

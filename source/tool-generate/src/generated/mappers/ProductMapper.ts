@@ -1,8 +1,8 @@
 import { Product } from '../../domain/entities/Product'
-import { ViewProductDTO } from '../dtos/ProductDTO'
+import { ProductDtoView } from '../dtos/ProductDto'
 
 export class ProductMapper {
-  static toViewProductDTO(product: Product): ViewProductDTO {
+  static toProductDtoView(product: Product): ProductDtoView {
     return product
   }
 }

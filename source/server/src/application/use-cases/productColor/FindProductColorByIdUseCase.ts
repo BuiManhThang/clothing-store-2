@@ -1,4 +1,4 @@
-import { ViewProductColorDTO } from '../../dtos/ProductColorDTO'
+import { ProductColorDtoView } from '../../dtos/ProductColorDto'
 import { IProductColorRepo } from '../../../domain/interfaces/repositories/IProductColorRepo'
 import { ProductColorMapper } from '../../mappers/ProductColorMapper'
 
@@ -9,9 +9,9 @@ export class FindProductColorByIdUseCase {
     this.#productColorRepo = productColorRepo
   }
 
-  async execute(id: string): Promise<ViewProductColorDTO | null> {
+  async execute(id: string): Promise<ProductColorDtoView | null> {
     const productColor = await this.#productColorRepo.findById(id)
     if (!productColor) return null
-    return ProductColorMapper.toViewProductColorDTO(productColor)
+    return ProductColorMapper.toProductColorDtoView(productColor)
   }
 }

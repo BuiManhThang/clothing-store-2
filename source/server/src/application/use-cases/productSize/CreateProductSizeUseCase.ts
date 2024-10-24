@@ -1,8 +1,9 @@
 import { ProductSize } from '../../../domain/entities/ProductSize'
-import { CreateProductSizeDTO, ViewProductSizeDTO } from '../../dtos/ProductSizeDTO'
+import { ProductSizeDtoCreate, ProductSizeDtoView } from '../../dtos/ProductSizeDto'
 import { IProductSizeRepo } from '../../../domain/interfaces/repositories/IProductSizeRepo'
 import { ProductSizeMapper } from '../../mappers/ProductSizeMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class CreateProductSizeUseCase {
   readonly #productSizeRepo: IProductSizeRepo
@@ -11,7 +12,7 @@ export class CreateProductSizeUseCase {
     this.#productSizeRepo = productSizeRepo
   }
 
-  async execute(createProductSizeDto: CreateProductSizeDTO): Promise<ViewProductSizeDTO> {
+  async execute(userContextService: IUserContextService | undefined, createProductSizeDto: ProductSizeDtoCreate): Promise<ProductSizeDtoView> {
     const productSize: ProductSize = {
       id: generateUUID(),
       productId: createProductSizeDto.productId,
@@ -20,11 +21,11 @@ export class CreateProductSizeUseCase {
       description: createProductSizeDto.description,
       status: createProductSizeDto.status,
       createdAt: new Date(),
-      createdBy: '',
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newProductSize = await this.#productSizeRepo.create(productSize)
 
-    return ProductSizeMapper.toViewProductSizeDTO(newProductSize)
+    return ProductSizeMapper.toProductSizeDtoView(newProductSize)
   }
 }

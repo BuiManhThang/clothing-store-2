@@ -1,5 +1,5 @@
-import { ViewTokenDTO } from '../../dtos/TokenDTO'
-import { ITokenRepo } from '../../interfaces/repositories/ITokenRepo'
+import { TokenDtoView } from '../../dtos/TokenDto'
+import { ITokenRepo } from '../../../domain/interfaces/repositories/ITokenRepo'
 import { TokenMapper } from '../../mappers/TokenMapper'
 
 export class FindTokenByIdUseCase {
@@ -9,9 +9,9 @@ export class FindTokenByIdUseCase {
     this.#tokenRepo = tokenRepo
   }
 
-  async execute(id: string): Promise<ViewTokenDTO | null> {
+  async execute(id: string): Promise<TokenDtoView | null> {
     const token = await this.#tokenRepo.findById(id)
     if (!token) return null
-    return TokenMapper.toViewTokenDTO(token)
+    return TokenMapper.toTokenDtoView(token)
   }
 }

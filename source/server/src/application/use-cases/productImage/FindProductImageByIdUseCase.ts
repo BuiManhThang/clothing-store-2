@@ -1,4 +1,4 @@
-import { ViewProductImageDTO } from '../../dtos/ProductImageDTO'
+import { ProductImageDtoView } from '../../dtos/ProductImageDto'
 import { IProductImageRepo } from '../../../domain/interfaces/repositories/IProductImageRepo'
 import { ProductImageMapper } from '../../mappers/ProductImageMapper'
 
@@ -9,9 +9,9 @@ export class FindProductImageByIdUseCase {
     this.#productImageRepo = productImageRepo
   }
 
-  async execute(id: string): Promise<ViewProductImageDTO | null> {
+  async execute(id: string): Promise<ProductImageDtoView | null> {
     const productImage = await this.#productImageRepo.findById(id)
     if (!productImage) return null
-    return ProductImageMapper.toViewProductImageDTO(productImage)
+    return ProductImageMapper.toProductImageDtoView(productImage)
   }
 }

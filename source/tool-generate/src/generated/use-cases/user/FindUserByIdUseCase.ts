@@ -1,5 +1,5 @@
-import { ViewUserDTO } from '../../dtos/UserDTO'
-import { IUserRepo } from '../../interfaces/repositories/IUserRepo'
+import { UserDtoView } from '../../dtos/UserDto'
+import { IUserRepo } from '../../../domain/interfaces/repositories/IUserRepo'
 import { UserMapper } from '../../mappers/UserMapper'
 
 export class FindUserByIdUseCase {
@@ -9,9 +9,9 @@ export class FindUserByIdUseCase {
     this.#userRepo = userRepo
   }
 
-  async execute(id: string): Promise<ViewUserDTO | null> {
+  async execute(id: string): Promise<UserDtoView | null> {
     const user = await this.#userRepo.findById(id)
     if (!user) return null
-    return UserMapper.toViewUserDTO(user)
+    return UserMapper.toUserDtoView(user)
   }
 }

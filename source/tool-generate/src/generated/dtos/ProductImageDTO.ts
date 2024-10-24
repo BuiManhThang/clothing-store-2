@@ -1,17 +1,21 @@
-export interface CreateProductImageDTO {
+export interface ProductImageDtoCreate {
   productId: string;
   imageId: string;
   description: string;
 }
 
-export interface UpdateProductImageDTO {
+export interface ProductImageDtoUpdate {
   productId: string;
   imageId: string;
   description: string;
 }
 
-export interface ViewProductImageDTO {
+export interface ProductImageDtoView {
   productId: string;
   imageId: string;
   description: string;
+  createdAt: Date
+  createdBy: string
+  modifiedAt?: Date
+  modifiedBy?: string
 }

@@ -29,7 +29,7 @@ export class UpdateRoleUseCase {
       createdAt: oldRole.createdAt,
       createdBy: oldRole.createdBy,
       modifiedAt: new Date(),
-      modifiedBy: userContextService?.getCurrentUserId() || '',
+      modifiedBy: userContextService?.getCurrentUserId(),
     }
 
     const updatedRole = await this.#roleRepo.update(id, role)

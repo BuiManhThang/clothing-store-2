@@ -10,31 +10,31 @@ export class UserContextService implements IUserContextService {
     this.#request = request
   }
 
-  getCurrentUserId(): string | null {
+  getCurrentUserId(): string | undefined {
     const token = this.#getToken()
     if (token) {
       const decodedToken = jwt.decode(token) as AuthContext | null
-      return decodedToken?.userId || null
+      return decodedToken?.userId
     }
-    return null
+    return undefined
   }
 
-  getCurrentUserRoleId(): string | null {
+  getCurrentUserRoleId(): string | undefined {
     const token = this.#getToken()
     if (token) {
       const decodedToken = jwt.decode(token) as AuthContext | null
-      return decodedToken?.roleId || null
+      return decodedToken?.roleId
     }
-    return null
+    return undefined
   }
 
-  getCurrentUserRoleCode(): string | null {
+  getCurrentUserRoleCode(): string | undefined {
     const token = this.#getToken()
     if (token) {
       const decodedToken = jwt.decode(token) as AuthContext | null
-      return decodedToken?.roleCode || null
+      return decodedToken?.roleCode
     }
-    return null
+    return undefined
   }
 
   #getToken(): string | null {

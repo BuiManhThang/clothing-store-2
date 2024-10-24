@@ -1,8 +1,8 @@
 import { Category } from '../../domain/entities/Category'
-import { ViewCategoryDTO } from '../dtos/CategoryDTO'
+import { CategoryDtoView } from '../dtos/CategoryDto'
 
 export class CategoryMapper {
-  static toViewCategoryDTO(category: Category): ViewCategoryDTO {
+  static toCategoryDtoView(category: Category): CategoryDtoView {
     return category
   }
 }

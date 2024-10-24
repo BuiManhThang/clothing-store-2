@@ -1,5 +1,5 @@
-import { ViewProductDTO } from '../../dtos/ProductDTO'
-import { IProductRepo } from '../../interfaces/repositories/IProductRepo'
+import { ProductDtoView } from '../../dtos/ProductDto'
+import { IProductRepo } from '../../../domain/interfaces/repositories/IProductRepo'
 import { ProductMapper } from '../../mappers/ProductMapper'
 
 export class FindAllProductsUseCase {
@@ -9,8 +9,8 @@ export class FindAllProductsUseCase {
     this.#productRepo = productService
   }
 
-  async execute(): Promise<ViewProductDTO[]> {
+  async execute(): Promise<ProductDtoView[]> {
     const products = await this.#productRepo.findAll()
-    return products.map((product) => ProductMapper.toViewProductDTO(product))
+    return products.map((product) => ProductMapper.toProductDtoView(product))
   }
 }

@@ -1,4 +1,4 @@
-export interface CreateReceiptDTO {
+export interface ReceiptDtoCreate {
   totalMoney: any;
   totalProduct: any;
   createdUserId: string;
@@ -8,7 +8,7 @@ export interface CreateReceiptDTO {
   status: string;
 }
 
-export interface UpdateReceiptDTO {
+export interface ReceiptDtoUpdate {
   totalMoney: any;
   totalProduct: any;
   createdUserId: string;
@@ -18,7 +18,7 @@ export interface UpdateReceiptDTO {
   status: string;
 }
 
-export interface ViewReceiptDTO {
+export interface ReceiptDtoView {
   totalMoney: any;
   totalProduct: any;
   createdUserId: string;
@@ -26,4 +26,8 @@ export interface ViewReceiptDTO {
   code: string;
   description: string;
   status: string;
+  createdAt: Date
+  createdBy: string
+  modifiedAt?: Date
+  modifiedBy?: string
 }

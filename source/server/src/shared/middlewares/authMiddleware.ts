@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { UnauthorizedError } from '../errors/UnauthorizedError'
-import { IJwtService } from '../../application/interfaces/services/IJwtService'
+import { IJwtService } from '../../application/interfaces/IJwtService'
 
 export class AuthMiddleware {
   readonly #jwtService: IJwtService

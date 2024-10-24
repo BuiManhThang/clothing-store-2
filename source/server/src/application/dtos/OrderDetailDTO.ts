@@ -1,4 +1,4 @@
-export interface CreateOrderDetailDTO {
+export interface OrderDetailDtoCreate {
   sizeId: string;
   quantity: number;
   price: any;
@@ -12,7 +12,7 @@ export interface CreateOrderDetailDTO {
   sizeName: string;
 }
 
-export interface UpdateOrderDetailDTO {
+export interface OrderDetailDtoUpdate {
   sizeId: string;
   quantity: number;
   price: any;
@@ -26,7 +26,7 @@ export interface UpdateOrderDetailDTO {
   sizeName: string;
 }
 
-export interface ViewOrderDetailDTO {
+export interface OrderDetailDtoView {
   sizeId: string;
   quantity: number;
   price: any;
@@ -38,4 +38,8 @@ export interface ViewOrderDetailDTO {
   colorCode: string;
   colorName: string;
   sizeName: string;
+  createdAt: Date
+  createdBy: string
+  modifiedAt?: Date
+  modifiedBy?: string
 }

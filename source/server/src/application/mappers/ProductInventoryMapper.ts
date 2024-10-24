@@ -1,8 +1,8 @@
 import { ProductInventory } from '../../domain/entities/ProductInventory'
-import { ViewProductInventoryDTO } from '../dtos/ProductInventoryDTO'
+import { ProductInventoryDtoView } from '../dtos/ProductInventoryDto'
 
 export class ProductInventoryMapper {
-  static toViewProductInventoryDTO(productInventory: ProductInventory): ViewProductInventoryDTO {
+  static toProductInventoryDtoView(productInventory: ProductInventory): ProductInventoryDtoView {
     return productInventory
   }
 }

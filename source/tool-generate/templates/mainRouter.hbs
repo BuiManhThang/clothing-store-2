@@ -1,31 +1,43 @@
+//#region Import Entities
 {{#each tableNames}}
+  //#region Import {{TableName}}
   import { {{TableName}}PostgresRepo } from '../../infrastructure/repositories/{{TableName}}PostgresRepo'
   import { {{TableName}}Controller } from '../controllers/{{TableName}}Controller'
   import { create{{TableName}}Router } from './{{TableName}}Router'
   import { Create{{TableName}}UseCase } from '../../application/use-cases/{{tableName}}/Create{{TableName}}UseCase'
   import { Update{{TableName}}UseCase } from '../../application/use-cases/{{tableName}}/Update{{TableName}}UseCase'
   import { Find{{TableName}}ByIdUseCase } from '../../application/use-cases/{{tableName}}/Find{{TableName}}ByIdUseCase'
-  import { FindAll{{TableNames}}UseCase } from '../../application/use-cases/{{tableName}}/FindAll{{TableName}}sUseCase'
+  import { FindAll{{TableNames}}UseCase } from '../../application/use-cases/{{tableName}}/FindAll{{TableNames}}UseCase'
+  import { Get{{TableName}}PaginationUseCase } from '../../application/use-cases/{{tableName}}/Get{{TableName}}PaginationUseCase'
   import { Delete{{TableName}}UseCase } from '../../application/use-cases/{{tableName}}/Delete{{TableName}}UseCase'
+  //#endregion
 
+{{/each}}
+//#endregion
+
+//#region Declare Entities
+{{#each tableNames}}
+  //#region Declare {{TableName}}
   const {{tableName}}Repo = new {{TableName}}PostgresRepo()
   const create{{TableName}}UseCase = new Create{{TableName}}UseCase({{tableName}}Repo)
   const update{{TableName}}UseCase = new Update{{TableName}}UseCase({{tableName}}Repo)
   const find{{TableName}}ByIdUseCase = new Find{{TableName}}ByIdUseCase({{tableName}}Repo)
   const findAll{{TableNames}}UseCase = new FindAll{{TableNames}}UseCase({{tableName}}Repo)
+  const getPagination{{TableName}}UseCase = new Get{{TableName}}PaginationUseCase({{tableName}}Repo)
   const delete{{TableName}}UseCase = new Delete{{TableName}}UseCase({{tableName}}Repo)
   const {{tableName}}Controller = new {{TableName}}Controller(
     create{{TableName}}UseCase,
     update{{TableName}}UseCase,
     find{{TableName}}ByIdUseCase,
     findAll{{TableNames}}UseCase,
+    getPagination{{TableName}}UseCase,
     delete{{TableName}}UseCase
   )
-  export const {{tableName}}Router = create{{TableName}}Router({{tableName}}Controller)
-
+  export const {{tableName}}Router = create{{TableName}}Router({{tableName}}Controller, authMiddleware)
+  //#endregion
 
 {{/each}}
-
+//#endregion
 
 
 {{#each tableNames}}

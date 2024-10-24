@@ -1,5 +1,5 @@
-import { ViewCouponDTO } from '../../dtos/CouponDTO'
-import { ICouponRepo } from '../../interfaces/repositories/ICouponRepo'
+import { CouponDtoView } from '../../dtos/CouponDto'
+import { ICouponRepo } from '../../../domain/interfaces/repositories/ICouponRepo'
 import { CouponMapper } from '../../mappers/CouponMapper'
 
 export class FindAllCouponsUseCase {
@@ -9,8 +9,8 @@ export class FindAllCouponsUseCase {
     this.#couponRepo = couponService
   }
 
-  async execute(): Promise<ViewCouponDTO[]> {
+  async execute(): Promise<CouponDtoView[]> {
     const coupons = await this.#couponRepo.findAll()
-    return coupons.map((coupon) => CouponMapper.toViewCouponDTO(coupon))
+    return coupons.map((coupon) => CouponMapper.toCouponDtoView(coupon))
   }
 }

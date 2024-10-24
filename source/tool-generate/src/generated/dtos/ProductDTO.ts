@@ -1,4 +1,4 @@
-export interface CreateProductDTO {
+export interface ProductDtoCreate {
   categoryId: string;
   avatarId: string;
   code: string;
@@ -7,7 +7,7 @@ export interface CreateProductDTO {
   status: string;
 }
 
-export interface UpdateProductDTO {
+export interface ProductDtoUpdate {
   categoryId: string;
   avatarId: string;
   code: string;
@@ -16,11 +16,15 @@ export interface UpdateProductDTO {
   status: string;
 }
 
-export interface ViewProductDTO {
+export interface ProductDtoView {
   categoryId: string;
   avatarId: string;
   code: string;
   name: string;
   description: string;
   status: string;
+  createdAt: Date
+  createdBy: string
+  modifiedAt?: Date
+  modifiedBy?: string
 }

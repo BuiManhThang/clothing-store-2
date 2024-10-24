@@ -1,17 +1,21 @@
-export interface Create{{EntityName}}DTO {
+export interface {{EntityName}}DtoCreate {
 {{#each createDtoColumns}}
   {{column_name}}: {{data_type}};
 {{/each}}
 }
 
-export interface Update{{EntityName}}DTO {
+export interface {{EntityName}}DtoUpdate {
 {{#each createDtoColumns}}
   {{column_name}}: {{data_type}};
 {{/each}}
 }
 
-export interface View{{EntityName}}DTO {
+export interface {{EntityName}}DtoView {
 {{#each columns}}
   {{column_name}}: {{data_type}};
 {{/each}}
+  createdAt: Date
+  createdBy: string
+  modifiedAt?: Date
+  modifiedBy?: string
 }

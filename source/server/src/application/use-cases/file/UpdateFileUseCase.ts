@@ -1,8 +1,9 @@
 import { File } from '../../../domain/entities/File'
 import { NotFoundError } from '../../../shared/errors/NotFoundError'
-import { UpdateFileDTO, ViewFileDTO } from '../../dtos/FileDTO'
+import { FileDtoUpdate, FileDtoView } from '../../dtos/FileDto'
 import { IFileRepo } from '../../../domain/interfaces/repositories/IFileRepo'
 import { FileMapper } from '../../mappers/FileMapper'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class UpdateFileUseCase {
   readonly #fileRepo: IFileRepo
@@ -11,23 +12,23 @@ export class UpdateFileUseCase {
     this.#fileRepo = fileRepo
   }
 
-  async execute(id: string, updatefileDTO: UpdateFileDTO): Promise<ViewFileDTO | null> {
+  async execute(userContextService: IUserContextService | undefined, id: string, updatefileDto: FileDtoUpdate): Promise<FileDtoView | null> {
     const oldFile = await this.#fileRepo.findById(id)
     if (!oldFile) throw new NotFoundError('')
 
     const file: File = {
       id: oldFile.id,
-      name: updatefileDTO.name,
-      status: updatefileDTO.status,
+      name: updatefileDto.name,
+      status: updatefileDto.status,
       createdAt: oldFile.createdAt,
       createdBy: oldFile.createdBy,
       modifiedAt: new Date(),
-      modifiedBy: '',
+      modifiedBy: userContextService?.getCurrentUserId() || '',
     }
 
     const updatedFile = await this.#fileRepo.update(id, file)
 
-    if (updatedFile) return FileMapper.toViewFileDTO(updatedFile)
+    if (updatedFile) return FileMapper.toFileDtoView(updatedFile)
     return null
   }
 }

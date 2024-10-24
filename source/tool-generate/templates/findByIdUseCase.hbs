@@ -1,5 +1,5 @@
-import { View{{EntityName}}DTO } from '../../dtos/{{EntityName}}DTO'
-import { I{{EntityName}}Repo } from '../../interfaces/repositories/I{{EntityName}}Repo'
+import { {{EntityName}}DtoView } from '../../dtos/{{EntityName}}Dto'
+import { I{{EntityName}}Repo } from '../../../domain/interfaces/repositories/I{{EntityName}}Repo'
 import { {{EntityName}}Mapper } from '../../mappers/{{EntityName}}Mapper'
 
 export class Find{{EntityName}}ByIdUseCase {
@@ -9,9 +9,9 @@ export class Find{{EntityName}}ByIdUseCase {
     this.#{{entityName}}Repo = {{entityName}}Repo
   }
 
-  async execute(id: string): Promise<View{{EntityName}}DTO | null> {
+  async execute(id: string): Promise<{{EntityName}}DtoView | null> {
     const {{entityName}} = await this.#{{entityName}}Repo.findById(id)
     if (!{{entityName}}) return null
-    return {{EntityName}}Mapper.toView{{EntityName}}DTO({{entityName}})
+    return {{EntityName}}Mapper.to{{EntityName}}DtoView({{entityName}})
   }
 }

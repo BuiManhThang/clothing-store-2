@@ -1,8 +1,8 @@
 import { Order } from '../../domain/entities/Order'
-import { ViewOrderDTO } from '../dtos/OrderDTO'
+import { OrderDtoView } from '../dtos/OrderDto'
 
 export class OrderMapper {
-  static toViewOrderDTO(order: Order): ViewOrderDTO {
+  static toOrderDtoView(order: Order): OrderDtoView {
     return order
   }
 }

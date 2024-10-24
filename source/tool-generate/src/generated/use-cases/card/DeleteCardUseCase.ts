@@ -1,4 +1,4 @@
-import { ICardRepo } from '../../interfaces/repositories/ICardRepo'
+import { ICardRepo } from '../../../domain/interfaces/repositories/ICardRepo'
 
 export class DeleteCardUseCase {
   readonly #cardRepo: ICardRepo

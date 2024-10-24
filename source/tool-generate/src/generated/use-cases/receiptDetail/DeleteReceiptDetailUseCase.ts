@@ -1,4 +1,4 @@
-import { IReceiptDetailRepo } from '../../interfaces/repositories/IReceiptDetailRepo'
+import { IReceiptDetailRepo } from '../../../domain/interfaces/repositories/IReceiptDetailRepo'
 
 export class DeleteReceiptDetailUseCase {
   readonly #receiptDetailRepo: IReceiptDetailRepo

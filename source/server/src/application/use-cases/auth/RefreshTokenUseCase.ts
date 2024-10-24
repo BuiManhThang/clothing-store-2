@@ -1,4 +1,4 @@
-import { IAuthService } from '../../interfaces/services/IAuthService'
+import { IAuthService } from '../../interfaces/IAuthService'
 
 export class RefreshTokenUseCase {
   readonly #authService: IAuthService

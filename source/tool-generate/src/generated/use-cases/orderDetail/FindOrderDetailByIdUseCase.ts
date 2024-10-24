@@ -1,5 +1,5 @@
-import { ViewOrderDetailDTO } from '../../dtos/OrderDetailDTO'
-import { IOrderDetailRepo } from '../../interfaces/repositories/IOrderDetailRepo'
+import { OrderDetailDtoView } from '../../dtos/OrderDetailDto'
+import { IOrderDetailRepo } from '../../../domain/interfaces/repositories/IOrderDetailRepo'
 import { OrderDetailMapper } from '../../mappers/OrderDetailMapper'
 
 export class FindOrderDetailByIdUseCase {
@@ -9,9 +9,9 @@ export class FindOrderDetailByIdUseCase {
     this.#orderDetailRepo = orderDetailRepo
   }
 
-  async execute(id: string): Promise<ViewOrderDetailDTO | null> {
+  async execute(id: string): Promise<OrderDetailDtoView | null> {
     const orderDetail = await this.#orderDetailRepo.findById(id)
     if (!orderDetail) return null
-    return OrderDetailMapper.toViewOrderDetailDTO(orderDetail)
+    return OrderDetailMapper.toOrderDetailDtoView(orderDetail)
   }
 }

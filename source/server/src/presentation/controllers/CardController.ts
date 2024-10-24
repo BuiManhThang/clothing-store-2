@@ -1,10 +1,11 @@
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { CreateCardUseCase } from '../../application/use-cases/card/CreateCardUseCase'
 import { DeleteCardUseCase } from '../../application/use-cases/card/DeleteCardUseCase'
 import { FindAllCardsUseCase } from '../../application/use-cases/card/FindAllCardsUseCase'
+import { GetCardPaginationUseCase } from '../../application/use-cases/card/GetCardPaginationUseCase'
 import { FindCardByIdUseCase } from '../../application/use-cases/card/FindCardByIdUseCase'
 import { UpdateCardUseCase } from '../../application/use-cases/card/UpdateCardUseCase'
-import { CreateCardDTO, UpdateCardDTO } from '../../application/dtos/CardDTO'
+import { CardDtoCreate, CardDtoUpdate } from '../../application/dtos/CardDto'
 import { BaseController } from './BaseController'
 import { HTTP_STATUS } from '../../shared/constants/httpStatus'
 
@@ -13,6 +14,7 @@ export class CardController extends BaseController {
   readonly #updateCardUseCase: UpdateCardUseCase
   readonly #findCardByIdUseCase: FindCardByIdUseCase
   readonly #findAllCardsUseCase: FindAllCardsUseCase
+  readonly #getPaginationCardUseCase: GetCardPaginationUseCase
   readonly #deleteCardUseCase: DeleteCardUseCase
 
   constructor(
@@ -20,6 +22,7 @@ export class CardController extends BaseController {
     updateCardUseCase: UpdateCardUseCase,
     findCardByIdUseCase: FindCardByIdUseCase,
     findAllCardsUseCase: FindAllCardsUseCase,
+    getPaginationCardUseCase: GetCardPaginationUseCase,
     deleteCardUseCase: DeleteCardUseCase
   ) {
     super()
@@ -27,33 +30,34 @@ export class CardController extends BaseController {
     this.#updateCardUseCase = updateCardUseCase
     this.#findCardByIdUseCase = findCardByIdUseCase
     this.#findAllCardsUseCase = findAllCardsUseCase
+    this.#getPaginationCardUseCase = getPaginationCardUseCase
     this.#deleteCardUseCase = deleteCardUseCase
   }
 
-  async create(req: Request, res: Response) {
-    const createCardDTO: CreateCardDTO = req.body
+  async create(req: Request, res: Response, next: NextFunction) {
+    const createCardDto: CardDtoCreate = req.body
 
     try {
-      const createdCard = await this.#createCardUseCase.execute(createCardDTO)
+      const createdCard = await this.#createCardUseCase.execute(req.userContextService, createCardDto)
       return res.status(HTTP_STATUS.CREATED).json(createdCard)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const cardId = req.params.id
-    const updateCardDTO: UpdateCardDTO = req.body
+    const updateCardDto: CardDtoUpdate = req.body
 
     try {
-      const updatedCard = await this.#updateCardUseCase.execute(cardId, updateCardDTO)
+      const updatedCard = await this.#updateCardUseCase.execute(req.userContextService, cardId, updateCardDto)
       return res.status(HTTP_STATUS.OK).json(updatedCard)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findById(req: Request, res: Response) {
+  async findById(req: Request, res: Response, next: NextFunction) {
     const cardId = req.params.id
 
     try {
@@ -64,21 +68,38 @@ export class CardController extends BaseController {
 
       return res.status(HTTP_STATUS.OK).json(card)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findAll(_req: Request, res: Response) {
+  async findAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const cards = await this.#findAllCardsUseCase.execute()
 
       return res.status(HTTP_STATUS.OK).json(cards)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async delete(req: Request, res: Response) {
+  async getPagination(req: Request, res: Response, next: NextFunction) {
+    try {
+      const pageSize = req.query.pageSize ? parseInt(req.query.pageSize.toString()) : undefined
+      const pageIndex = req.query.pageIndex ? parseInt(req.query.pageIndex.toString()) : undefined
+      const paginationResult = await this.#getPaginationCardUseCase.execute(
+        pageSize,
+        pageIndex,
+        req.query.sort?.toString(),
+        req.query.sortDirection?.toString(),
+      )
+
+      return res.status(HTTP_STATUS.OK).json(paginationResult)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction) {
     const cardId = req.params.id
 
     try {
@@ -86,7 +107,7 @@ export class CardController extends BaseController {
 
       return res.sendStatus(HTTP_STATUS.NO_CONTENT)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 }

@@ -1,5 +1,5 @@
-import { View{{EntityName}}DTO } from '../../dtos/{{EntityName}}DTO'
-import { I{{EntityName}}Repo } from '../../interfaces/repositories/I{{EntityName}}Repo'
+import { {{EntityName}}DtoView } from '../../dtos/{{EntityName}}Dto'
+import { I{{EntityName}}Repo } from '../../../domain/interfaces/repositories/I{{EntityName}}Repo'
 import { {{EntityName}}Mapper } from '../../mappers/{{EntityName}}Mapper'
 
 export class FindAll{{EntityNames}}UseCase {
@@ -9,8 +9,8 @@ export class FindAll{{EntityNames}}UseCase {
     this.#{{entityName}}Repo = {{entityName}}Service
   }
 
-  async execute(): Promise<View{{EntityName}}DTO[]> {
+  async execute(): Promise<{{EntityName}}DtoView[]> {
     const {{entityNames}} = await this.#{{entityName}}Repo.findAll()
-    return {{entityNames}}.map(({{entityName}}) => {{EntityName}}Mapper.toView{{EntityName}}DTO({{entityName}}))
+    return {{entityNames}}.map(({{entityName}}) => {{EntityName}}Mapper.to{{EntityName}}DtoView({{entityName}}))
   }
 }

@@ -1,8 +1,9 @@
 import { ProductColor } from '../../../domain/entities/ProductColor'
-import { CreateProductColorDTO, ViewProductColorDTO } from '../../dtos/ProductColorDTO'
+import { ProductColorDtoCreate, ProductColorDtoView } from '../../dtos/ProductColorDto'
 import { IProductColorRepo } from '../../../domain/interfaces/repositories/IProductColorRepo'
 import { ProductColorMapper } from '../../mappers/ProductColorMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class CreateProductColorUseCase {
   readonly #productColorRepo: IProductColorRepo
@@ -11,7 +12,7 @@ export class CreateProductColorUseCase {
     this.#productColorRepo = productColorRepo
   }
 
-  async execute(createProductColorDto: CreateProductColorDTO): Promise<ViewProductColorDTO> {
+  async execute(userContextService: IUserContextService | undefined, createProductColorDto: ProductColorDtoCreate): Promise<ProductColorDtoView> {
     const productColor: ProductColor = {
       id: generateUUID(),
       order: createProductColorDto.order,
@@ -21,11 +22,11 @@ export class CreateProductColorUseCase {
       name: createProductColorDto.name,
       description: createProductColorDto.description,
       createdAt: new Date(),
-      createdBy: '',
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newProductColor = await this.#productColorRepo.create(productColor)
 
-    return ProductColorMapper.toViewProductColorDTO(newProductColor)
+    return ProductColorMapper.toProductColorDtoView(newProductColor)
   }
 }

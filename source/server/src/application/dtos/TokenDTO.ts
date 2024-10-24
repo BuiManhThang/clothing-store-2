@@ -1,20 +1,24 @@
-export interface CreateTokenDTO {
+export interface TokenDtoCreate {
   userId: string;
   expireDate: Date;
   refreshToken: string;
   device: string;
 }
 
-export interface UpdateTokenDTO {
+export interface TokenDtoUpdate {
   userId: string;
   expireDate: Date;
   refreshToken: string;
   device: string;
 }
 
-export interface ViewTokenDTO {
+export interface TokenDtoView {
   userId: string;
   expireDate: Date;
   refreshToken: string;
   device: string;
+  createdAt: Date
+  createdBy: string
+  modifiedAt?: Date
+  modifiedBy?: string
 }

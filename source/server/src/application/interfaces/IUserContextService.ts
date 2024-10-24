@@ -1,5 +1,5 @@
 export interface IUserContextService {
-  getCurrentUserId(): string | null
-  getCurrentUserRoleId(): string | null
-  getCurrentUserRoleCode(): string | null
+  getCurrentUserId(): string | undefined
+  getCurrentUserRoleId(): string | undefined
+  getCurrentUserRoleCode(): string | undefined
 }

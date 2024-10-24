@@ -1,8 +1,8 @@
 import { Coupon } from '../../domain/entities/Coupon'
-import { ViewCouponDTO } from '../dtos/CouponDTO'
+import { CouponDtoView } from '../dtos/CouponDto'
 
 export class CouponMapper {
-  static toViewCouponDTO(coupon: Coupon): ViewCouponDTO {
+  static toCouponDtoView(coupon: Coupon): CouponDtoView {
     return coupon
   }
 }

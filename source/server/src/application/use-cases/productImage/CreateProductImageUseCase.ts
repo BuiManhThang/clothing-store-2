@@ -1,8 +1,9 @@
 import { ProductImage } from '../../../domain/entities/ProductImage'
-import { CreateProductImageDTO, ViewProductImageDTO } from '../../dtos/ProductImageDTO'
+import { ProductImageDtoCreate, ProductImageDtoView } from '../../dtos/ProductImageDto'
 import { IProductImageRepo } from '../../../domain/interfaces/repositories/IProductImageRepo'
 import { ProductImageMapper } from '../../mappers/ProductImageMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class CreateProductImageUseCase {
   readonly #productImageRepo: IProductImageRepo
@@ -11,18 +12,18 @@ export class CreateProductImageUseCase {
     this.#productImageRepo = productImageRepo
   }
 
-  async execute(createProductImageDto: CreateProductImageDTO): Promise<ViewProductImageDTO> {
+  async execute(userContextService: IUserContextService | undefined, createProductImageDto: ProductImageDtoCreate): Promise<ProductImageDtoView> {
     const productImage: ProductImage = {
       id: generateUUID(),
       productId: createProductImageDto.productId,
       imageId: createProductImageDto.imageId,
       description: createProductImageDto.description,
       createdAt: new Date(),
-      createdBy: '',
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newProductImage = await this.#productImageRepo.create(productImage)
 
-    return ProductImageMapper.toViewProductImageDTO(newProductImage)
+    return ProductImageMapper.toProductImageDtoView(newProductImage)
   }
 }

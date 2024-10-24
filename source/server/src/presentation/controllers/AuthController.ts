@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import { LoginDTO, RegisterUserDTO } from '../../application/dtos/AuthDto'
+import { LoginDto, RegisterUserDto } from '../../application/dtos/AuthDto'
 import { RegisterUseCase } from '../../application/use-cases/auth/RegisterUseCase'
 import { BaseController } from './BaseController'
 import { HTTP_STATUS } from '../../shared/constants/httpStatus'
@@ -27,22 +27,22 @@ export class AuthController extends BaseController {
   }
 
   async register(req: Request, res: Response, next: NextFunction) {
-    const registerUserDTO: RegisterUserDTO = req.body
+    const registerUserDto: RegisterUserDto = req.body
 
     try {
-      const authResponseDTO = await this.#registerUseCase.execute(registerUserDTO)
-      return res.status(HTTP_STATUS.CREATED).json(authResponseDTO)
+      const authResponseDto = await this.#registerUseCase.execute(registerUserDto)
+      return res.status(HTTP_STATUS.CREATED).json(authResponseDto)
     } catch (error) {
       next(error)
     }
   }
 
   async login(req: Request, res: Response, next: NextFunction) {
-    const loginDTO: LoginDTO = req.body
+    const loginDto: LoginDto = req.body
 
     try {
-      const authResponseDTO = await this.#loginUseCase.execute(loginDTO)
-      return res.status(HTTP_STATUS.OK).json(authResponseDTO)
+      const authResponseDto = await this.#loginUseCase.execute(loginDto)
+      return res.status(HTTP_STATUS.OK).json(authResponseDto)
     } catch (error) {
       next(error)
     }
@@ -52,8 +52,8 @@ export class AuthController extends BaseController {
     const { refreshToken } = req.body
 
     try {
-      const authResponseDTO = await this.#refreshTokenUseCase.execute(refreshToken)
-      return res.status(HTTP_STATUS.OK).json(authResponseDTO)
+      const authResponseDto = await this.#refreshTokenUseCase.execute(refreshToken)
+      return res.status(HTTP_STATUS.OK).json(authResponseDto)
     } catch (error) {
       next(error)
     }

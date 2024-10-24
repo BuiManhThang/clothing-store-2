@@ -7,18 +7,18 @@ import { BadRequestError } from '../../shared/errors/BadRequestError'
 import { ValidateCondition, ValidateResult } from '../../shared/types'
 import { generateUUID, incrementCode } from '../../shared/utils/commonUtil'
 import { validate } from '../../shared/utils/validator'
-import { LoginDTO, AuthResponseDTO, RegisterUserDTO, AuthContext } from '../dtos/AuthDto'
-import { CreateUserDTO, ViewUserDTO } from '../dtos/UserDTO'
-import { IAuthService } from '../interfaces/services/IAuthService'
+import { LoginDto, AuthResponseDto, RegisterUserDto, AuthContext } from '../dtos/AuthDto'
+import { UserDtoView } from '../dtos/UserDto'
+import { IAuthService } from '../interfaces/IAuthService'
 import bcrypt from 'bcrypt'
 import { UserMapper } from '../mappers/UserMapper'
-import { IJwtService } from '../interfaces/services/IJwtService'
+import { IJwtService } from '../interfaces/IJwtService'
 import { ITokenRepo } from '../../domain/interfaces/repositories/ITokenRepo'
 import config from '../../config'
 import { Token } from '../../domain/entities/Token'
 import { ForbiddenError } from '../../shared/errors/ForbiddenError'
 
-const VALIDATE_REGISTER_CONDITIONS: ValidateCondition<RegisterUserDTO>[] = [
+const VALIDATE_REGISTER_CONDITIONS: ValidateCondition<RegisterUserDto>[] = [
   {
     fieldName: 'email',
     rules: [
@@ -55,7 +55,7 @@ export class AuthService implements IAuthService {
     this.#jwtService = jwtService
   }
 
-  async refreshToken(refreshToken: string): Promise<AuthResponseDTO> {
+  async refreshToken(refreshToken: string): Promise<AuthResponseDto> {
     // 1. Xác thực refresh token có hợp lệ không
     let decoded: AuthContext
     try {
@@ -91,16 +91,16 @@ export class AuthService implements IAuthService {
     }
 
     return {
-      user: UserMapper.toViewUserDTO(user),
+      user: UserMapper.toUserDtoView(user),
       accessToken,
       refreshToken: newRefreshToken, // Trả về refreshToken mới
     }
   }
 
-  async login(loginDTO: LoginDTO): Promise<AuthResponseDTO> {
-    const { email, password } = loginDTO
+  async login(loginDto: LoginDto): Promise<AuthResponseDto> {
+    const { email, password } = loginDto
 
-    const validateResults: ValidateResult<LoginDTO>[] = []
+    const validateResults: ValidateResult<LoginDto>[] = []
     // 1. Tìm người dùng bằng email
     const user = await this.#userRepo.findByEmail(email)
     if (!user) {
@@ -148,28 +148,28 @@ export class AuthService implements IAuthService {
 
     // 5. Trả về thông tin người dùng và token
     return {
-      user: UserMapper.toViewUserDTO(user),
+      user: UserMapper.toUserDtoView(user),
       accessToken,
       refreshToken,
     }
   }
 
-  async register(registerUserDTO: RegisterUserDTO): Promise<AuthResponseDTO> {
-    const validateResults: ValidateResult<RegisterUserDTO>[] = validate(
-      registerUserDTO,
+  async register(registerUserDto: RegisterUserDto): Promise<AuthResponseDto> {
+    const validateResults: ValidateResult<RegisterUserDto>[] = validate(
+      registerUserDto,
       VALIDATE_REGISTER_CONDITIONS
     )
     if (validateResults.length) {
       throw new BadRequestError('', validateResults)
     }
 
-    const existedUser = await this.#userRepo.findByEmail(registerUserDTO.email)
+    const existedUser = await this.#userRepo.findByEmail(registerUserDto.email)
 
     if (existedUser) {
       validateResults.push({
         fieldName: 'email',
         message: 'Email đã tồn tại',
-        value: registerUserDTO.email,
+        value: registerUserDto.email,
         errorCode: ErrorCode.EmailExisting,
       })
       throw new BadRequestError('', validateResults)
@@ -181,14 +181,14 @@ export class AuthService implements IAuthService {
     const theNewestUser = await this.#userRepo.findTheNewstUser()
     const newUserCode = incrementCode('U', theNewestUser?.code)
 
-    const hashPassword = await bcrypt.hash(registerUserDTO.password, 10)
+    const hashPassword = await bcrypt.hash(registerUserDto.password, 10)
     const userId = generateUUID()
     const user: User = {
       id: userId,
       code: newUserCode,
-      email: registerUserDTO.email,
+      email: registerUserDto.email,
       password: hashPassword,
-      fullName: registerUserDTO.email.split('@')[0],
+      fullName: registerUserDto.email.split('@')[0],
       phoneNumber: '',
       roleId: customerRole.id,
       status: UserStatus.Active,
@@ -222,10 +222,10 @@ export class AuthService implements IAuthService {
       await dbConnection.commit()
       dbConnection.closeConnection()
 
-      const viewRoleDTO: ViewUserDTO = UserMapper.toViewUserDTO(newUser)
+      const viewRoleDto: UserDtoView = UserMapper.toUserDtoView(newUser)
 
       return {
-        user: viewRoleDTO,
+        user: viewRoleDto,
         accessToken,
         refreshToken,
       }

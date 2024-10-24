@@ -1,8 +1,8 @@
 import { User } from '../../domain/entities/User'
-import { ViewUserDTO } from '../dtos/UserDTO'
+import { UserDtoView } from '../dtos/UserDto'
 
 export class UserMapper {
-  static toViewUserDTO(user: User): ViewUserDTO {
+  static toUserDtoView(user: User): UserDtoView {
     return user
   }
 }

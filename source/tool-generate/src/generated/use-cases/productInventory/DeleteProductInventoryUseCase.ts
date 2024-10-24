@@ -1,4 +1,4 @@
-import { IProductInventoryRepo } from '../../interfaces/repositories/IProductInventoryRepo'
+import { IProductInventoryRepo } from '../../../domain/interfaces/repositories/IProductInventoryRepo'
 
 export class DeleteProductInventoryUseCase {
   readonly #productInventoryRepo: IProductInventoryRepo

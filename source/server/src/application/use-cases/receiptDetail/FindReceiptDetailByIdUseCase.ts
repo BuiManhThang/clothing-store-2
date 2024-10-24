@@ -1,4 +1,4 @@
-import { ViewReceiptDetailDTO } from '../../dtos/ReceiptDetailDTO'
+import { ReceiptDetailDtoView } from '../../dtos/ReceiptDetailDto'
 import { IReceiptDetailRepo } from '../../../domain/interfaces/repositories/IReceiptDetailRepo'
 import { ReceiptDetailMapper } from '../../mappers/ReceiptDetailMapper'
 
@@ -9,9 +9,9 @@ export class FindReceiptDetailByIdUseCase {
     this.#receiptDetailRepo = receiptDetailRepo
   }
 
-  async execute(id: string): Promise<ViewReceiptDetailDTO | null> {
+  async execute(id: string): Promise<ReceiptDetailDtoView | null> {
     const receiptDetail = await this.#receiptDetailRepo.findById(id)
     if (!receiptDetail) return null
-    return ReceiptDetailMapper.toViewReceiptDetailDTO(receiptDetail)
+    return ReceiptDetailMapper.toReceiptDetailDtoView(receiptDetail)
   }
 }

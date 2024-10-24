@@ -1,10 +1,11 @@
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { CreateProductSizeUseCase } from '../../application/use-cases/productSize/CreateProductSizeUseCase'
 import { DeleteProductSizeUseCase } from '../../application/use-cases/productSize/DeleteProductSizeUseCase'
 import { FindAllProductSizesUseCase } from '../../application/use-cases/productSize/FindAllProductSizesUseCase'
+import { GetProductSizePaginationUseCase } from '../../application/use-cases/productSize/GetProductSizePaginationUseCase'
 import { FindProductSizeByIdUseCase } from '../../application/use-cases/productSize/FindProductSizeByIdUseCase'
 import { UpdateProductSizeUseCase } from '../../application/use-cases/productSize/UpdateProductSizeUseCase'
-import { CreateProductSizeDTO, UpdateProductSizeDTO } from '../../application/dtos/ProductSizeDTO'
+import { ProductSizeDtoCreate, ProductSizeDtoUpdate } from '../../application/dtos/ProductSizeDto'
 import { BaseController } from './BaseController'
 import { HTTP_STATUS } from '../../shared/constants/httpStatus'
 
@@ -13,6 +14,7 @@ export class ProductSizeController extends BaseController {
   readonly #updateProductSizeUseCase: UpdateProductSizeUseCase
   readonly #findProductSizeByIdUseCase: FindProductSizeByIdUseCase
   readonly #findAllProductSizesUseCase: FindAllProductSizesUseCase
+  readonly #getPaginationProductSizeUseCase: GetProductSizePaginationUseCase
   readonly #deleteProductSizeUseCase: DeleteProductSizeUseCase
 
   constructor(
@@ -20,6 +22,7 @@ export class ProductSizeController extends BaseController {
     updateProductSizeUseCase: UpdateProductSizeUseCase,
     findProductSizeByIdUseCase: FindProductSizeByIdUseCase,
     findAllProductSizesUseCase: FindAllProductSizesUseCase,
+    getPaginationProductSizeUseCase: GetProductSizePaginationUseCase,
     deleteProductSizeUseCase: DeleteProductSizeUseCase
   ) {
     super()
@@ -27,33 +30,34 @@ export class ProductSizeController extends BaseController {
     this.#updateProductSizeUseCase = updateProductSizeUseCase
     this.#findProductSizeByIdUseCase = findProductSizeByIdUseCase
     this.#findAllProductSizesUseCase = findAllProductSizesUseCase
+    this.#getPaginationProductSizeUseCase = getPaginationProductSizeUseCase
     this.#deleteProductSizeUseCase = deleteProductSizeUseCase
   }
 
-  async create(req: Request, res: Response) {
-    const createProductSizeDTO: CreateProductSizeDTO = req.body
+  async create(req: Request, res: Response, next: NextFunction) {
+    const createProductSizeDto: ProductSizeDtoCreate = req.body
 
     try {
-      const createdProductSize = await this.#createProductSizeUseCase.execute(createProductSizeDTO)
+      const createdProductSize = await this.#createProductSizeUseCase.execute(req.userContextService, createProductSizeDto)
       return res.status(HTTP_STATUS.CREATED).json(createdProductSize)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const productSizeId = req.params.id
-    const updateProductSizeDTO: UpdateProductSizeDTO = req.body
+    const updateProductSizeDto: ProductSizeDtoUpdate = req.body
 
     try {
-      const updatedProductSize = await this.#updateProductSizeUseCase.execute(productSizeId, updateProductSizeDTO)
+      const updatedProductSize = await this.#updateProductSizeUseCase.execute(req.userContextService, productSizeId, updateProductSizeDto)
       return res.status(HTTP_STATUS.OK).json(updatedProductSize)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findById(req: Request, res: Response) {
+  async findById(req: Request, res: Response, next: NextFunction) {
     const productSizeId = req.params.id
 
     try {
@@ -64,21 +68,38 @@ export class ProductSizeController extends BaseController {
 
       return res.status(HTTP_STATUS.OK).json(productSize)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findAll(_req: Request, res: Response) {
+  async findAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const productSizes = await this.#findAllProductSizesUseCase.execute()
 
       return res.status(HTTP_STATUS.OK).json(productSizes)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async delete(req: Request, res: Response) {
+  async getPagination(req: Request, res: Response, next: NextFunction) {
+    try {
+      const pageSize = req.query.pageSize ? parseInt(req.query.pageSize.toString()) : undefined
+      const pageIndex = req.query.pageIndex ? parseInt(req.query.pageIndex.toString()) : undefined
+      const paginationResult = await this.#getPaginationProductSizeUseCase.execute(
+        pageSize,
+        pageIndex,
+        req.query.sort?.toString(),
+        req.query.sortDirection?.toString(),
+      )
+
+      return res.status(HTTP_STATUS.OK).json(paginationResult)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction) {
     const productSizeId = req.params.id
 
     try {
@@ -86,7 +107,7 @@ export class ProductSizeController extends BaseController {
 
       return res.sendStatus(HTTP_STATUS.NO_CONTENT)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 }

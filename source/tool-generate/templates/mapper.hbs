@@ -1,8 +1,8 @@
 import { {{EntityName}} } from '../../domain/entities/{{EntityName}}'
-import { View{{EntityName}}DTO } from '../dtos/{{EntityName}}DTO'
+import { {{EntityName}}DtoView } from '../dtos/{{EntityName}}Dto'
 
 export class {{EntityName}}Mapper {
-  static toView{{EntityName}}DTO({{entityName}}: {{EntityName}}): View{{EntityName}}DTO {
+  static to{{EntityName}}DtoView({{entityName}}: {{EntityName}}): {{EntityName}}DtoView {
     return {{entityName}}
   }
 }

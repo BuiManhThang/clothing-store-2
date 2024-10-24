@@ -2,27 +2,27 @@ import { NextFunction, Request, Response } from 'express'
 import { CreateRoleUseCase } from '../../application/use-cases/role/CreateRoleUseCase'
 import { DeleteRoleUseCase } from '../../application/use-cases/role/DeleteRoleUseCase'
 import { FindAllRolesUseCase } from '../../application/use-cases/role/FindAllRolesUseCase'
+import { GetRolePaginationUseCase } from '../../application/use-cases/role/GetRolePaginationUseCase'
 import { FindRoleByIdUseCase } from '../../application/use-cases/role/FindRoleByIdUseCase'
 import { UpdateRoleUseCase } from '../../application/use-cases/role/UpdateRoleUseCase'
 import { BaseController } from './BaseController'
 import { HTTP_STATUS } from '../../shared/constants/httpStatus'
 import { RoleDtoCreate, RoleDtoUpdate } from '../../application/dtos/RoleDto'
-import { GetPaginationRoleUseCase } from '../../application/use-cases/role/GetPaginationRoleUseCase'
 
 export class RoleController extends BaseController {
   readonly #createRoleUseCase: CreateRoleUseCase
   readonly #updateRoleUseCase: UpdateRoleUseCase
   readonly #findRoleByIdUseCase: FindRoleByIdUseCase
   readonly #findAllRolesUseCase: FindAllRolesUseCase
+  readonly #getPaginationRoleUseCase: GetRolePaginationUseCase
   readonly #deleteRoleUseCase: DeleteRoleUseCase
-  readonly #getPaginationRoleUseCase: GetPaginationRoleUseCase
 
   constructor(
     createRoleUseCase: CreateRoleUseCase,
     updateRoleUseCase: UpdateRoleUseCase,
     findRoleByIdUseCase: FindRoleByIdUseCase,
     findAllRolesUseCase: FindAllRolesUseCase,
-    getPaginationRoleUseCase: GetPaginationRoleUseCase,
+    getPaginationRoleUseCase: GetRolePaginationUseCase,
     deleteRoleUseCase: DeleteRoleUseCase
   ) {
     super()
@@ -35,12 +35,12 @@ export class RoleController extends BaseController {
   }
 
   async create(req: Request, res: Response, next: NextFunction) {
-    const createRoleDTO: RoleDtoCreate = req.body
+    const roleDtoCreate: RoleDtoCreate = req.body
 
     try {
       const createdRole = await this.#createRoleUseCase.execute(
         req.userContextService,
-        createRoleDTO
+        roleDtoCreate
       )
       return res.status(HTTP_STATUS.CREATED).json(createdRole)
     } catch (error) {
@@ -50,13 +50,13 @@ export class RoleController extends BaseController {
 
   async update(req: Request, res: Response, next: NextFunction) {
     const roleId = req.params.id
-    const updateRoleDTO: RoleDtoUpdate = req.body
+    const roleDtoUpdate: RoleDtoUpdate = req.body
 
     try {
       const updatedRole = await this.#updateRoleUseCase.execute(
         req.userContextService,
         roleId,
-        updateRoleDTO
+        roleDtoUpdate
       )
       return res.status(HTTP_STATUS.OK).json(updatedRole)
     } catch (error) {

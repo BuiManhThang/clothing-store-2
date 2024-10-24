@@ -1,8 +1,8 @@
 import { Receipt } from '../../domain/entities/Receipt'
-import { ViewReceiptDTO } from '../dtos/ReceiptDTO'
+import { ReceiptDtoView } from '../dtos/ReceiptDto'
 
 export class ReceiptMapper {
-  static toViewReceiptDTO(receipt: Receipt): ViewReceiptDTO {
+  static toReceiptDtoView(receipt: Receipt): ReceiptDtoView {
     return receipt
   }
 }

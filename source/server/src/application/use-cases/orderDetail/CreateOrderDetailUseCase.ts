@@ -1,8 +1,9 @@
 import { OrderDetail } from '../../../domain/entities/OrderDetail'
-import { CreateOrderDetailDTO, ViewOrderDetailDTO } from '../../dtos/OrderDetailDTO'
+import { OrderDetailDtoCreate, OrderDetailDtoView } from '../../dtos/OrderDetailDto'
 import { IOrderDetailRepo } from '../../../domain/interfaces/repositories/IOrderDetailRepo'
 import { OrderDetailMapper } from '../../mappers/OrderDetailMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class CreateOrderDetailUseCase {
   readonly #orderDetailRepo: IOrderDetailRepo
@@ -11,7 +12,7 @@ export class CreateOrderDetailUseCase {
     this.#orderDetailRepo = orderDetailRepo
   }
 
-  async execute(createOrderDetailDto: CreateOrderDetailDTO): Promise<ViewOrderDetailDTO> {
+  async execute(userContextService: IUserContextService | undefined, createOrderDetailDto: OrderDetailDtoCreate): Promise<OrderDetailDtoView> {
     const orderDetail: OrderDetail = {
       id: generateUUID(),
       sizeId: createOrderDetailDto.sizeId,
@@ -26,11 +27,11 @@ export class CreateOrderDetailUseCase {
       colorName: createOrderDetailDto.colorName,
       sizeName: createOrderDetailDto.sizeName,
       createdAt: new Date(),
-      createdBy: '',
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newOrderDetail = await this.#orderDetailRepo.create(orderDetail)
 
-    return OrderDetailMapper.toViewOrderDetailDTO(newOrderDetail)
+    return OrderDetailMapper.toOrderDetailDtoView(newOrderDetail)
   }
 }

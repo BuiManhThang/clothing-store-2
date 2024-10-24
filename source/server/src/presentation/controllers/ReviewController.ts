@@ -1,10 +1,11 @@
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { CreateReviewUseCase } from '../../application/use-cases/review/CreateReviewUseCase'
 import { DeleteReviewUseCase } from '../../application/use-cases/review/DeleteReviewUseCase'
 import { FindAllReviewsUseCase } from '../../application/use-cases/review/FindAllReviewsUseCase'
+import { GetReviewPaginationUseCase } from '../../application/use-cases/review/GetReviewPaginationUseCase'
 import { FindReviewByIdUseCase } from '../../application/use-cases/review/FindReviewByIdUseCase'
 import { UpdateReviewUseCase } from '../../application/use-cases/review/UpdateReviewUseCase'
-import { CreateReviewDTO, UpdateReviewDTO } from '../../application/dtos/ReviewDTO'
+import { ReviewDtoCreate, ReviewDtoUpdate } from '../../application/dtos/ReviewDto'
 import { BaseController } from './BaseController'
 import { HTTP_STATUS } from '../../shared/constants/httpStatus'
 
@@ -13,6 +14,7 @@ export class ReviewController extends BaseController {
   readonly #updateReviewUseCase: UpdateReviewUseCase
   readonly #findReviewByIdUseCase: FindReviewByIdUseCase
   readonly #findAllReviewsUseCase: FindAllReviewsUseCase
+  readonly #getPaginationReviewUseCase: GetReviewPaginationUseCase
   readonly #deleteReviewUseCase: DeleteReviewUseCase
 
   constructor(
@@ -20,6 +22,7 @@ export class ReviewController extends BaseController {
     updateReviewUseCase: UpdateReviewUseCase,
     findReviewByIdUseCase: FindReviewByIdUseCase,
     findAllReviewsUseCase: FindAllReviewsUseCase,
+    getPaginationReviewUseCase: GetReviewPaginationUseCase,
     deleteReviewUseCase: DeleteReviewUseCase
   ) {
     super()
@@ -27,33 +30,34 @@ export class ReviewController extends BaseController {
     this.#updateReviewUseCase = updateReviewUseCase
     this.#findReviewByIdUseCase = findReviewByIdUseCase
     this.#findAllReviewsUseCase = findAllReviewsUseCase
+    this.#getPaginationReviewUseCase = getPaginationReviewUseCase
     this.#deleteReviewUseCase = deleteReviewUseCase
   }
 
-  async create(req: Request, res: Response) {
-    const createReviewDTO: CreateReviewDTO = req.body
+  async create(req: Request, res: Response, next: NextFunction) {
+    const createReviewDto: ReviewDtoCreate = req.body
 
     try {
-      const createdReview = await this.#createReviewUseCase.execute(createReviewDTO)
+      const createdReview = await this.#createReviewUseCase.execute(req.userContextService, createReviewDto)
       return res.status(HTTP_STATUS.CREATED).json(createdReview)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const reviewId = req.params.id
-    const updateReviewDTO: UpdateReviewDTO = req.body
+    const updateReviewDto: ReviewDtoUpdate = req.body
 
     try {
-      const updatedReview = await this.#updateReviewUseCase.execute(reviewId, updateReviewDTO)
+      const updatedReview = await this.#updateReviewUseCase.execute(req.userContextService, reviewId, updateReviewDto)
       return res.status(HTTP_STATUS.OK).json(updatedReview)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findById(req: Request, res: Response) {
+  async findById(req: Request, res: Response, next: NextFunction) {
     const reviewId = req.params.id
 
     try {
@@ -64,21 +68,38 @@ export class ReviewController extends BaseController {
 
       return res.status(HTTP_STATUS.OK).json(review)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findAll(_req: Request, res: Response) {
+  async findAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const reviews = await this.#findAllReviewsUseCase.execute()
 
       return res.status(HTTP_STATUS.OK).json(reviews)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async delete(req: Request, res: Response) {
+  async getPagination(req: Request, res: Response, next: NextFunction) {
+    try {
+      const pageSize = req.query.pageSize ? parseInt(req.query.pageSize.toString()) : undefined
+      const pageIndex = req.query.pageIndex ? parseInt(req.query.pageIndex.toString()) : undefined
+      const paginationResult = await this.#getPaginationReviewUseCase.execute(
+        pageSize,
+        pageIndex,
+        req.query.sort?.toString(),
+        req.query.sortDirection?.toString(),
+      )
+
+      return res.status(HTTP_STATUS.OK).json(paginationResult)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction) {
     const reviewId = req.params.id
 
     try {
@@ -86,7 +107,7 @@ export class ReviewController extends BaseController {
 
       return res.sendStatus(HTTP_STATUS.NO_CONTENT)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 }

@@ -1,8 +1,8 @@
 import { ReceiptDetail } from '../../domain/entities/ReceiptDetail'
-import { ViewReceiptDetailDTO } from '../dtos/ReceiptDetailDTO'
+import { ReceiptDetailDtoView } from '../dtos/ReceiptDetailDto'
 
 export class ReceiptDetailMapper {
-  static toViewReceiptDetailDTO(receiptDetail: ReceiptDetail): ViewReceiptDetailDTO {
+  static toReceiptDetailDtoView(receiptDetail: ReceiptDetail): ReceiptDetailDtoView {
     return receiptDetail
   }
 }

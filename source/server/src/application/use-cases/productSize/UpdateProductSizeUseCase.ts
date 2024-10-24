@@ -1,8 +1,9 @@
 import { ProductSize } from '../../../domain/entities/ProductSize'
 import { NotFoundError } from '../../../shared/errors/NotFoundError'
-import { UpdateProductSizeDTO, ViewProductSizeDTO } from '../../dtos/ProductSizeDTO'
+import { ProductSizeDtoUpdate, ProductSizeDtoView } from '../../dtos/ProductSizeDto'
 import { IProductSizeRepo } from '../../../domain/interfaces/repositories/IProductSizeRepo'
 import { ProductSizeMapper } from '../../mappers/ProductSizeMapper'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class UpdateProductSizeUseCase {
   readonly #productSizeRepo: IProductSizeRepo
@@ -11,29 +12,26 @@ export class UpdateProductSizeUseCase {
     this.#productSizeRepo = productSizeRepo
   }
 
-  async execute(
-    id: string,
-    updateproductSizeDTO: UpdateProductSizeDTO
-  ): Promise<ViewProductSizeDTO | null> {
+  async execute(userContextService: IUserContextService | undefined, id: string, updateproductSizeDto: ProductSizeDtoUpdate): Promise<ProductSizeDtoView | null> {
     const oldProductSize = await this.#productSizeRepo.findById(id)
     if (!oldProductSize) throw new NotFoundError('')
 
     const productSize: ProductSize = {
       id: oldProductSize.id,
-      productId: updateproductSizeDTO.productId,
-      order: updateproductSizeDTO.order,
-      name: updateproductSizeDTO.name,
-      description: updateproductSizeDTO.description,
-      status: updateproductSizeDTO.status,
+      productId: updateproductSizeDto.productId,
+      order: updateproductSizeDto.order,
+      name: updateproductSizeDto.name,
+      description: updateproductSizeDto.description,
+      status: updateproductSizeDto.status,
       createdAt: oldProductSize.createdAt,
       createdBy: oldProductSize.createdBy,
       modifiedAt: new Date(),
-      modifiedBy: '',
+      modifiedBy: userContextService?.getCurrentUserId() || '',
     }
 
     const updatedProductSize = await this.#productSizeRepo.update(id, productSize)
 
-    if (updatedProductSize) return ProductSizeMapper.toViewProductSizeDTO(updatedProductSize)
+    if (updatedProductSize) return ProductSizeMapper.toProductSizeDtoView(updatedProductSize)
     return null
   }
 }

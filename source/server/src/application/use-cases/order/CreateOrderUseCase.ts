@@ -1,8 +1,9 @@
 import { Order } from '../../../domain/entities/Order'
-import { CreateOrderDTO, ViewOrderDTO } from '../../dtos/OrderDTO'
+import { OrderDtoCreate, OrderDtoView } from '../../dtos/OrderDto'
 import { IOrderRepo } from '../../../domain/interfaces/repositories/IOrderRepo'
 import { OrderMapper } from '../../mappers/OrderMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class CreateOrderUseCase {
   readonly #orderRepo: IOrderRepo
@@ -11,7 +12,7 @@ export class CreateOrderUseCase {
     this.#orderRepo = orderRepo
   }
 
-  async execute(createOrderDto: CreateOrderDTO): Promise<ViewOrderDTO> {
+  async execute(userContextService: IUserContextService | undefined, createOrderDto: OrderDtoCreate): Promise<OrderDtoView> {
     const order: Order = {
       id: generateUUID(),
       orderDate: createOrderDto.orderDate,
@@ -30,11 +31,11 @@ export class CreateOrderUseCase {
       description: createOrderDto.description,
       city: createOrderDto.city,
       createdAt: new Date(),
-      createdBy: '',
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newOrder = await this.#orderRepo.create(order)
 
-    return OrderMapper.toViewOrderDTO(newOrder)
+    return OrderMapper.toOrderDtoView(newOrder)
   }
 }

@@ -1,8 +1,9 @@
 import { User } from '../../../domain/entities/User'
-import { CreateUserDTO, ViewUserDTO } from '../../dtos/UserDTO'
-import { IUserRepo } from '../../interfaces/repositories/IUserRepo'
+import { UserDtoCreate, UserDtoView } from '../../dtos/UserDto'
+import { IUserRepo } from '../../../domain/interfaces/repositories/IUserRepo'
 import { UserMapper } from '../../mappers/UserMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class CreateUserUseCase {
   readonly #userRepo: IUserRepo
@@ -11,7 +12,7 @@ export class CreateUserUseCase {
     this.#userRepo = userRepo
   }
 
-  async execute(createUserDto: CreateUserDTO): Promise<ViewUserDTO> {
+  async execute(userContextService: IUserContextService | undefined, createUserDto: UserDtoCreate): Promise<UserDtoView> {
     const user: User = {
       id: generateUUID(),
       roleId: createUserDto.roleId,
@@ -23,11 +24,11 @@ export class CreateUserUseCase {
       email: createUserDto.email,
       password: createUserDto.password,
       createdAt: new Date(),
-      createdBy: '',
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newUser = await this.#userRepo.create(user)
 
-    return UserMapper.toViewUserDTO(newUser)
+    return UserMapper.toUserDtoView(newUser)
   }
 }

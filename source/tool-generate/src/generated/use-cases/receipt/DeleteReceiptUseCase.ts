@@ -1,4 +1,4 @@
-import { IReceiptRepo } from '../../interfaces/repositories/IReceiptRepo'
+import { IReceiptRepo } from '../../../domain/interfaces/repositories/IReceiptRepo'
 
 export class DeleteReceiptUseCase {
   readonly #receiptRepo: IReceiptRepo

@@ -1,4 +1,4 @@
-import { ICategoryRepo } from '../../interfaces/repositories/ICategoryRepo'
+import { ICategoryRepo } from '../../../domain/interfaces/repositories/ICategoryRepo'
 
 export class DeleteCategoryUseCase {
   readonly #categoryRepo: ICategoryRepo

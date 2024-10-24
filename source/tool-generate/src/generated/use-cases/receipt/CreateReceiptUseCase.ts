@@ -1,8 +1,9 @@
 import { Receipt } from '../../../domain/entities/Receipt'
-import { CreateReceiptDTO, ViewReceiptDTO } from '../../dtos/ReceiptDTO'
-import { IReceiptRepo } from '../../interfaces/repositories/IReceiptRepo'
+import { ReceiptDtoCreate, ReceiptDtoView } from '../../dtos/ReceiptDto'
+import { IReceiptRepo } from '../../../domain/interfaces/repositories/IReceiptRepo'
 import { ReceiptMapper } from '../../mappers/ReceiptMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class CreateReceiptUseCase {
   readonly #receiptRepo: IReceiptRepo
@@ -11,7 +12,7 @@ export class CreateReceiptUseCase {
     this.#receiptRepo = receiptRepo
   }
 
-  async execute(createReceiptDto: CreateReceiptDTO): Promise<ViewReceiptDTO> {
+  async execute(userContextService: IUserContextService | undefined, createReceiptDto: ReceiptDtoCreate): Promise<ReceiptDtoView> {
     const receipt: Receipt = {
       id: generateUUID(),
       totalMoney: createReceiptDto.totalMoney,
@@ -22,11 +23,11 @@ export class CreateReceiptUseCase {
       description: createReceiptDto.description,
       status: createReceiptDto.status,
       createdAt: new Date(),
-      createdBy: '',
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newReceipt = await this.#receiptRepo.create(receipt)
 
-    return ReceiptMapper.toViewReceiptDTO(newReceipt)
+    return ReceiptMapper.toReceiptDtoView(newReceipt)
   }
 }

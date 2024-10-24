@@ -1,10 +1,11 @@
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { CreateProductInventoryUseCase } from '../../application/use-cases/productInventory/CreateProductInventoryUseCase'
 import { DeleteProductInventoryUseCase } from '../../application/use-cases/productInventory/DeleteProductInventoryUseCase'
 import { FindAllProductInventoryUseCase } from '../../application/use-cases/productInventory/FindAllProductInventoryUseCase'
+import { GetProductInventoryPaginationUseCase } from '../../application/use-cases/productInventory/GetProductInventoryPaginationUseCase'
 import { FindProductInventoryByIdUseCase } from '../../application/use-cases/productInventory/FindProductInventoryByIdUseCase'
 import { UpdateProductInventoryUseCase } from '../../application/use-cases/productInventory/UpdateProductInventoryUseCase'
-import { CreateProductInventoryDTO, UpdateProductInventoryDTO } from '../../application/dtos/ProductInventoryDTO'
+import { ProductInventoryDtoCreate, ProductInventoryDtoUpdate } from '../../application/dtos/ProductInventoryDto'
 import { BaseController } from './BaseController'
 import { HTTP_STATUS } from '../../shared/constants/httpStatus'
 
@@ -13,6 +14,7 @@ export class ProductInventoryController extends BaseController {
   readonly #updateProductInventoryUseCase: UpdateProductInventoryUseCase
   readonly #findProductInventoryByIdUseCase: FindProductInventoryByIdUseCase
   readonly #findAllProductInventoryUseCase: FindAllProductInventoryUseCase
+  readonly #getPaginationProductInventoryUseCase: GetProductInventoryPaginationUseCase
   readonly #deleteProductInventoryUseCase: DeleteProductInventoryUseCase
 
   constructor(
@@ -20,6 +22,7 @@ export class ProductInventoryController extends BaseController {
     updateProductInventoryUseCase: UpdateProductInventoryUseCase,
     findProductInventoryByIdUseCase: FindProductInventoryByIdUseCase,
     findAllProductInventoryUseCase: FindAllProductInventoryUseCase,
+    getPaginationProductInventoryUseCase: GetProductInventoryPaginationUseCase,
     deleteProductInventoryUseCase: DeleteProductInventoryUseCase
   ) {
     super()
@@ -27,33 +30,34 @@ export class ProductInventoryController extends BaseController {
     this.#updateProductInventoryUseCase = updateProductInventoryUseCase
     this.#findProductInventoryByIdUseCase = findProductInventoryByIdUseCase
     this.#findAllProductInventoryUseCase = findAllProductInventoryUseCase
+    this.#getPaginationProductInventoryUseCase = getPaginationProductInventoryUseCase
     this.#deleteProductInventoryUseCase = deleteProductInventoryUseCase
   }
 
-  async create(req: Request, res: Response) {
-    const createProductInventoryDTO: CreateProductInventoryDTO = req.body
+  async create(req: Request, res: Response, next: NextFunction) {
+    const createProductInventoryDto: ProductInventoryDtoCreate = req.body
 
     try {
-      const createdProductInventory = await this.#createProductInventoryUseCase.execute(createProductInventoryDTO)
+      const createdProductInventory = await this.#createProductInventoryUseCase.execute(req.userContextService, createProductInventoryDto)
       return res.status(HTTP_STATUS.CREATED).json(createdProductInventory)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const productInventoryId = req.params.id
-    const updateProductInventoryDTO: UpdateProductInventoryDTO = req.body
+    const updateProductInventoryDto: ProductInventoryDtoUpdate = req.body
 
     try {
-      const updatedProductInventory = await this.#updateProductInventoryUseCase.execute(productInventoryId, updateProductInventoryDTO)
+      const updatedProductInventory = await this.#updateProductInventoryUseCase.execute(req.userContextService, productInventoryId, updateProductInventoryDto)
       return res.status(HTTP_STATUS.OK).json(updatedProductInventory)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findById(req: Request, res: Response) {
+  async findById(req: Request, res: Response, next: NextFunction) {
     const productInventoryId = req.params.id
 
     try {
@@ -64,21 +68,38 @@ export class ProductInventoryController extends BaseController {
 
       return res.status(HTTP_STATUS.OK).json(productInventory)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async findAll(_req: Request, res: Response) {
+  async findAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const productInventory = await this.#findAllProductInventoryUseCase.execute()
 
       return res.status(HTTP_STATUS.OK).json(productInventory)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 
-  async delete(req: Request, res: Response) {
+  async getPagination(req: Request, res: Response, next: NextFunction) {
+    try {
+      const pageSize = req.query.pageSize ? parseInt(req.query.pageSize.toString()) : undefined
+      const pageIndex = req.query.pageIndex ? parseInt(req.query.pageIndex.toString()) : undefined
+      const paginationResult = await this.#getPaginationProductInventoryUseCase.execute(
+        pageSize,
+        pageIndex,
+        req.query.sort?.toString(),
+        req.query.sortDirection?.toString(),
+      )
+
+      return res.status(HTTP_STATUS.OK).json(paginationResult)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction) {
     const productInventoryId = req.params.id
 
     try {
@@ -86,7 +107,7 @@ export class ProductInventoryController extends BaseController {
 
       return res.sendStatus(HTTP_STATUS.NO_CONTENT)
     } catch (error) {
-      return this.handleAppError(error, res)
+      next(error)
     }
   }
 }

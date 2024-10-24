@@ -1,4 +1,4 @@
-import { ITokenRepo } from '../../interfaces/repositories/ITokenRepo'
+import { ITokenRepo } from '../../../domain/interfaces/repositories/ITokenRepo'
 
 export class DeleteTokenUseCase {
   readonly #tokenRepo: ITokenRepo

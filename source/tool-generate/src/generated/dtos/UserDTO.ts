@@ -1,4 +1,4 @@
-export interface CreateUserDTO {
+export interface UserDtoCreate {
   roleId: string;
   avatarId: string;
   phoneNumber: string;
@@ -9,7 +9,7 @@ export interface CreateUserDTO {
   password: string;
 }
 
-export interface UpdateUserDTO {
+export interface UserDtoUpdate {
   roleId: string;
   avatarId: string;
   phoneNumber: string;
@@ -20,7 +20,7 @@ export interface UpdateUserDTO {
   password: string;
 }
 
-export interface ViewUserDTO {
+export interface UserDtoView {
   roleId: string;
   avatarId: string;
   phoneNumber: string;
@@ -29,4 +29,8 @@ export interface ViewUserDTO {
   fullName: string;
   email: string;
   password: string;
+  createdAt: Date
+  createdBy: string
+  modifiedAt?: Date
+  modifiedBy?: string
 }

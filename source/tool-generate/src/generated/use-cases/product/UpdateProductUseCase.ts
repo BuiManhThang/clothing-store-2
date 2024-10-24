@@ -1,8 +1,9 @@
 import { Product } from '../../../domain/entities/Product'
 import { NotFoundError } from '../../../shared/errors/NotFoundError'
-import { UpdateProductDTO, ViewProductDTO } from '../../dtos/ProductDTO'
-import { IProductRepo } from '../../interfaces/repositories/IProductRepo'
+import { ProductDtoUpdate, ProductDtoView } from '../../dtos/ProductDto'
+import { IProductRepo } from '../../../domain/interfaces/repositories/IProductRepo'
 import { ProductMapper } from '../../mappers/ProductMapper'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class UpdateProductUseCase {
   readonly #productRepo: IProductRepo
@@ -11,27 +12,27 @@ export class UpdateProductUseCase {
     this.#productRepo = productRepo
   }
 
-  async execute(id: string, updateproductDTO: UpdateProductDTO): Promise<ViewProductDTO | null> {
+  async execute(userContextService: IUserContextService | undefined, id: string, updateproductDto: ProductDtoUpdate): Promise<ProductDtoView | null> {
     const oldProduct = await this.#productRepo.findById(id)
     if (!oldProduct) throw new NotFoundError('')
 
     const product: Product = {
       id: oldProduct.id,
-      categoryId: updateproductDTO.categoryId,
-      avatarId: updateproductDTO.avatarId,
-      code: updateproductDTO.code,
-      name: updateproductDTO.name,
-      description: updateproductDTO.description,
-      status: updateproductDTO.status,
+      categoryId: updateproductDto.categoryId,
+      avatarId: updateproductDto.avatarId,
+      code: updateproductDto.code,
+      name: updateproductDto.name,
+      description: updateproductDto.description,
+      status: updateproductDto.status,
       createdAt: oldProduct.createdAt,
       createdBy: oldProduct.createdBy,
       modifiedAt: new Date(),
-      modifiedBy: '',
+      modifiedBy: userContextService?.getCurrentUserId() || '',
     }
 
     const updatedProduct = await this.#productRepo.update(id, product)
 
-    if (updatedProduct) return ProductMapper.toViewProductDTO(updatedProduct)
+    if (updatedProduct) return ProductMapper.toProductDtoView(updatedProduct)
     return null
   }
 }

@@ -1,0 +1,55 @@
+import { {{EntityName}}DtoView } from '../../dtos/{{EntityName}}Dto'
+import { I{{EntityName}}Repo } from '../../../domain/interfaces/repositories/I{{EntityName}}Repo'
+import { {{EntityName}}Mapper } from '../../mappers/{{EntityName}}Mapper'
+import {
+  DbQueryBuilder,
+  FilterObject,
+  PaginationResult,
+  SortObject,
+} from '../../../shared/types/paginationType'
+import { {{EntityName}} } from '../../../domain/entities/{{EntityName}}'
+import { Condition, Operator, SortDirection } from '../../../shared/enums/paginationEnum'
+
+export class Get{{EntityName}}PaginationUseCase {
+  readonly #{{entityName}}Repo: I{{EntityName}}Repo
+
+  constructor({{entityName}}Repo: I{{EntityName}}Repo) {
+    this.#{{entityName}}Repo = {{entityName}}Repo
+  }
+
+  async execute(
+    pageSize?: number,
+    pageIndex?: number,
+    sort?: string,
+    sortDirection?: string
+  ): Promise<PaginationResult<{{EntityName}}DtoView>> {
+    const filterObjects: FilterObject<{{EntityName}}>[] = []
+
+    const sortObjects: SortObject<{{EntityName}}>[] = []
+    const keysOf{{EntityName}}: (keyof {{EntityName}})[] = []
+    const sortKey = sort as keyof {{EntityName}}
+    if (sort && keysOf{{EntityName}}.includes(sortKey)) {
+      sortObjects.push({
+        column: sortKey,
+        direction:
+          sortDirection?.toLocaleLowerCase() === SortDirection.Desc.toString().toLocaleLowerCase()
+            ? SortDirection.Desc
+            : SortDirection.Asc,
+      })
+    }
+
+    const dbQueryBuilder: DbQueryBuilder<{{EntityName}}> = {
+      filterObjects,
+      sortObjects,
+      pageSize,
+      pageIndex,
+    }
+
+    const paginationResult = await this.#{{entityName}}Repo.getPagination(dbQueryBuilder)
+    const formattedPaginationResult: PaginationResult<{{EntityName}}DtoView> = {
+      items: paginationResult.items.map(({{entityName}}) => {{EntityName}}Mapper.to{{EntityName}}DtoView({{entityName}})),
+      total: paginationResult.total,
+    }
+    return formattedPaginationResult
+  }
+}

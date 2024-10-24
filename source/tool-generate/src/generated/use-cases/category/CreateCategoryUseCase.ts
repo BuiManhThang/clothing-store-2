@@ -1,8 +1,9 @@
 import { Category } from '../../../domain/entities/Category'
-import { CreateCategoryDTO, ViewCategoryDTO } from '../../dtos/CategoryDTO'
-import { ICategoryRepo } from '../../interfaces/repositories/ICategoryRepo'
+import { CategoryDtoCreate, CategoryDtoView } from '../../dtos/CategoryDto'
+import { ICategoryRepo } from '../../../domain/interfaces/repositories/ICategoryRepo'
 import { CategoryMapper } from '../../mappers/CategoryMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class CreateCategoryUseCase {
   readonly #categoryRepo: ICategoryRepo
@@ -11,7 +12,7 @@ export class CreateCategoryUseCase {
     this.#categoryRepo = categoryRepo
   }
 
-  async execute(createCategoryDto: CreateCategoryDTO): Promise<ViewCategoryDTO> {
+  async execute(userContextService: IUserContextService | undefined, createCategoryDto: CategoryDtoCreate): Promise<CategoryDtoView> {
     const category: Category = {
       id: generateUUID(),
       productCount: createCategoryDto.productCount,
@@ -21,11 +22,11 @@ export class CreateCategoryUseCase {
       name: createCategoryDto.name,
       description: createCategoryDto.description,
       createdAt: new Date(),
-      createdBy: '',
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newCategory = await this.#categoryRepo.create(category)
 
-    return CategoryMapper.toViewCategoryDTO(newCategory)
+    return CategoryMapper.toCategoryDtoView(newCategory)
   }
 }

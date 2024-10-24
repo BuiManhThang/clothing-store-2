@@ -1,4 +1,4 @@
-export interface CreateOrderDTO {
+export interface OrderDtoCreate {
   orderDate: Date;
   totalMoney: any;
   totalProduct: any;
@@ -16,7 +16,7 @@ export interface CreateOrderDTO {
   city: string;
 }
 
-export interface UpdateOrderDTO {
+export interface OrderDtoUpdate {
   orderDate: Date;
   totalMoney: any;
   totalProduct: any;
@@ -34,7 +34,7 @@ export interface UpdateOrderDTO {
   city: string;
 }
 
-export interface ViewOrderDTO {
+export interface OrderDtoView {
   orderDate: Date;
   totalMoney: any;
   totalProduct: any;
@@ -50,4 +50,8 @@ export interface ViewOrderDTO {
   status: string;
   description: string;
   city: string;
+  createdAt: Date
+  createdBy: string
+  modifiedAt?: Date
+  modifiedBy?: string
 }

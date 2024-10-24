@@ -1,4 +1,4 @@
-import { IOrderRepo } from '../../interfaces/repositories/IOrderRepo'
+import { IOrderRepo } from '../../../domain/interfaces/repositories/IOrderRepo'
 
 export class DeleteOrderUseCase {
   readonly #orderRepo: IOrderRepo

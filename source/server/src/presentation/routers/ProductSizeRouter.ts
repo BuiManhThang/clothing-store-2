@@ -1,14 +1,16 @@
 import { Router } from 'express'
 import { ProductSizeController } from '../controllers/ProductSizeController'
+import { AuthMiddleware } from '../../shared/middlewares/authMiddleware'
 
-export const createProductSizeRouter = (productSizeController: ProductSizeController) => {
+export const createProductSizeRouter = (productSizeController: ProductSizeController, authMiddleware: AuthMiddleware) => {
   const router = Router()
 
-  router.get('/', (req, res) => productSizeController.findAll(req, res))
-  router.get('/:id', (req, res) => productSizeController.findById(req, res))
-  router.post('/', (req, res) => productSizeController.create(req, res))
-  router.put('/:id', (req, res) => productSizeController.update(req, res))
-  router.delete('/:id', (req, res) => productSizeController.delete(req, res))
+  router.get('/', (req, res, next) => productSizeController.findAll(req, res, next))
+  router.get('/pagination', (req, res, next) => productSizeController.getPagination(req, res, next))
+  router.get('/:id', (req, res, next) => productSizeController.findById(req, res, next))
+  router.post('/', (req, res, next) => productSizeController.create(req, res, next))
+  router.put('/:id', (req, res, next) => productSizeController.update(req, res, next))
+  router.delete('/:id', (req, res, next) => productSizeController.delete(req, res, next))
 
   return router
 }

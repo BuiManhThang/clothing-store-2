@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import config from '../../config'
-import { IJwtService } from '../interfaces/services/IJwtService'
+import { IJwtService } from '../interfaces/IJwtService'
 
 export class JwtService implements IJwtService {
   readonly #accessTokenSecret: string

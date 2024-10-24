@@ -1,5 +1,5 @@
-import { ViewProductDTO } from '../../dtos/ProductDTO'
-import { IProductRepo } from '../../interfaces/repositories/IProductRepo'
+import { ProductDtoView } from '../../dtos/ProductDto'
+import { IProductRepo } from '../../../domain/interfaces/repositories/IProductRepo'
 import { ProductMapper } from '../../mappers/ProductMapper'
 
 export class FindProductByIdUseCase {
@@ -9,9 +9,9 @@ export class FindProductByIdUseCase {
     this.#productRepo = productRepo
   }
 
-  async execute(id: string): Promise<ViewProductDTO | null> {
+  async execute(id: string): Promise<ProductDtoView | null> {
     const product = await this.#productRepo.findById(id)
     if (!product) return null
-    return ProductMapper.toViewProductDTO(product)
+    return ProductMapper.toProductDtoView(product)
   }
 }

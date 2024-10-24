@@ -1,8 +1,9 @@
 import { Category } from '../../../domain/entities/Category'
 import { NotFoundError } from '../../../shared/errors/NotFoundError'
-import { UpdateCategoryDTO, ViewCategoryDTO } from '../../dtos/CategoryDTO'
+import { CategoryDtoUpdate, CategoryDtoView } from '../../dtos/CategoryDto'
 import { ICategoryRepo } from '../../../domain/interfaces/repositories/ICategoryRepo'
 import { CategoryMapper } from '../../mappers/CategoryMapper'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class UpdateCategoryUseCase {
   readonly #categoryRepo: ICategoryRepo
@@ -11,27 +12,27 @@ export class UpdateCategoryUseCase {
     this.#categoryRepo = categoryRepo
   }
 
-  async execute(id: string, updatecategoryDTO: UpdateCategoryDTO): Promise<ViewCategoryDTO | null> {
+  async execute(userContextService: IUserContextService | undefined, id: string, updatecategoryDto: CategoryDtoUpdate): Promise<CategoryDtoView | null> {
     const oldCategory = await this.#categoryRepo.findById(id)
     if (!oldCategory) throw new NotFoundError('')
 
     const category: Category = {
       id: oldCategory.id,
-      productCount: updatecategoryDTO.productCount,
-      imageId: updatecategoryDTO.imageId,
-      status: updatecategoryDTO.status,
-      code: updatecategoryDTO.code,
-      name: updatecategoryDTO.name,
-      description: updatecategoryDTO.description,
+      productCount: updatecategoryDto.productCount,
+      imageId: updatecategoryDto.imageId,
+      status: updatecategoryDto.status,
+      code: updatecategoryDto.code,
+      name: updatecategoryDto.name,
+      description: updatecategoryDto.description,
       createdAt: oldCategory.createdAt,
       createdBy: oldCategory.createdBy,
       modifiedAt: new Date(),
-      modifiedBy: '',
+      modifiedBy: userContextService?.getCurrentUserId() || '',
     }
 
     const updatedCategory = await this.#categoryRepo.update(id, category)
 
-    if (updatedCategory) return CategoryMapper.toViewCategoryDTO(updatedCategory)
+    if (updatedCategory) return CategoryMapper.toCategoryDtoView(updatedCategory)
     return null
   }
 }

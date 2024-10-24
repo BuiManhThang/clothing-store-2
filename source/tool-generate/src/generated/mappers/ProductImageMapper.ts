@@ -1,8 +1,8 @@
 import { ProductImage } from '../../domain/entities/ProductImage'
-import { ViewProductImageDTO } from '../dtos/ProductImageDTO'
+import { ProductImageDtoView } from '../dtos/ProductImageDto'
 
 export class ProductImageMapper {
-  static toViewProductImageDTO(productImage: ProductImage): ViewProductImageDTO {
+  static toProductImageDtoView(productImage: ProductImage): ProductImageDtoView {
     return productImage
   }
 }

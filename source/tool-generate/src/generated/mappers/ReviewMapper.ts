@@ -1,8 +1,8 @@
 import { Review } from '../../domain/entities/Review'
-import { ViewReviewDTO } from '../dtos/ReviewDTO'
+import { ReviewDtoView } from '../dtos/ReviewDto'
 
 export class ReviewMapper {
-  static toViewReviewDTO(review: Review): ViewReviewDTO {
+  static toReviewDtoView(review: Review): ReviewDtoView {
     return review
   }
 }

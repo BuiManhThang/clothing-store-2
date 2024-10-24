@@ -1,5 +1,5 @@
-import { ViewOrderDTO } from '../../dtos/OrderDTO'
-import { IOrderRepo } from '../../interfaces/repositories/IOrderRepo'
+import { OrderDtoView } from '../../dtos/OrderDto'
+import { IOrderRepo } from '../../../domain/interfaces/repositories/IOrderRepo'
 import { OrderMapper } from '../../mappers/OrderMapper'
 
 export class FindAllOrdersUseCase {
@@ -9,8 +9,8 @@ export class FindAllOrdersUseCase {
     this.#orderRepo = orderService
   }
 
-  async execute(): Promise<ViewOrderDTO[]> {
+  async execute(): Promise<OrderDtoView[]> {
     const orders = await this.#orderRepo.findAll()
-    return orders.map((order) => OrderMapper.toViewOrderDTO(order))
+    return orders.map((order) => OrderMapper.toOrderDtoView(order))
   }
 }

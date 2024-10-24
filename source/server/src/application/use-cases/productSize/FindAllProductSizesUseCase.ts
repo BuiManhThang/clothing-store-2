@@ -1,4 +1,4 @@
-import { ViewProductSizeDTO } from '../../dtos/ProductSizeDTO'
+import { ProductSizeDtoView } from '../../dtos/ProductSizeDto'
 import { IProductSizeRepo } from '../../../domain/interfaces/repositories/IProductSizeRepo'
 import { ProductSizeMapper } from '../../mappers/ProductSizeMapper'
 
@@ -9,8 +9,8 @@ export class FindAllProductSizesUseCase {
     this.#productSizeRepo = productSizeService
   }
 
-  async execute(): Promise<ViewProductSizeDTO[]> {
+  async execute(): Promise<ProductSizeDtoView[]> {
     const productSizes = await this.#productSizeRepo.findAll()
-    return productSizes.map((productSize) => ProductSizeMapper.toViewProductSizeDTO(productSize))
+    return productSizes.map((productSize) => ProductSizeMapper.toProductSizeDtoView(productSize))
   }
 }

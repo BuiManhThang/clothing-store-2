@@ -1,4 +1,4 @@
-import { IProductColorRepo } from '../../interfaces/repositories/IProductColorRepo'
+import { IProductColorRepo } from '../../../domain/interfaces/repositories/IProductColorRepo'
 
 export class DeleteProductColorUseCase {
   readonly #productColorRepo: IProductColorRepo

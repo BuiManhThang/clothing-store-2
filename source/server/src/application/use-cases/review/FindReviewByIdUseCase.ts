@@ -1,4 +1,4 @@
-import { ViewReviewDTO } from '../../dtos/ReviewDTO'
+import { ReviewDtoView } from '../../dtos/ReviewDto'
 import { IReviewRepo } from '../../../domain/interfaces/repositories/IReviewRepo'
 import { ReviewMapper } from '../../mappers/ReviewMapper'
 
@@ -9,9 +9,9 @@ export class FindReviewByIdUseCase {
     this.#reviewRepo = reviewRepo
   }
 
-  async execute(id: string): Promise<ViewReviewDTO | null> {
+  async execute(id: string): Promise<ReviewDtoView | null> {
     const review = await this.#reviewRepo.findById(id)
     if (!review) return null
-    return ReviewMapper.toViewReviewDTO(review)
+    return ReviewMapper.toReviewDtoView(review)
   }
 }

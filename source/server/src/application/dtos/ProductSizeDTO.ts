@@ -1,4 +1,4 @@
-export interface CreateProductSizeDTO {
+export interface ProductSizeDtoCreate {
   productId: string;
   order: number;
   name: string;
@@ -6,7 +6,7 @@ export interface CreateProductSizeDTO {
   status: string;
 }
 
-export interface UpdateProductSizeDTO {
+export interface ProductSizeDtoUpdate {
   productId: string;
   order: number;
   name: string;
@@ -14,10 +14,14 @@ export interface UpdateProductSizeDTO {
   status: string;
 }
 
-export interface ViewProductSizeDTO {
+export interface ProductSizeDtoView {
   productId: string;
   order: number;
   name: string;
   description: string;
   status: string;
+  createdAt: Date
+  createdBy: string
+  modifiedAt?: Date
+  modifiedBy?: string
 }

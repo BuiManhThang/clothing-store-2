@@ -1,8 +1,9 @@
 import { Token } from '../../../domain/entities/Token'
-import { CreateTokenDTO, ViewTokenDTO } from '../../dtos/TokenDTO'
-import { ITokenRepo } from '../../interfaces/repositories/ITokenRepo'
+import { TokenDtoCreate, TokenDtoView } from '../../dtos/TokenDto'
+import { ITokenRepo } from '../../../domain/interfaces/repositories/ITokenRepo'
 import { TokenMapper } from '../../mappers/TokenMapper'
 import { generateUUID } from '../../../shared/utils/commonUtil'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class CreateTokenUseCase {
   readonly #tokenRepo: ITokenRepo
@@ -11,7 +12,7 @@ export class CreateTokenUseCase {
     this.#tokenRepo = tokenRepo
   }
 
-  async execute(createTokenDto: CreateTokenDTO): Promise<ViewTokenDTO> {
+  async execute(userContextService: IUserContextService | undefined, createTokenDto: TokenDtoCreate): Promise<TokenDtoView> {
     const token: Token = {
       id: generateUUID(),
       userId: createTokenDto.userId,
@@ -19,11 +20,11 @@ export class CreateTokenUseCase {
       refreshToken: createTokenDto.refreshToken,
       device: createTokenDto.device,
       createdAt: new Date(),
-      createdBy: '',
+      createdBy: userContextService?.getCurrentUserId() || '',
     }
 
     const newToken = await this.#tokenRepo.create(token)
 
-    return TokenMapper.toViewTokenDTO(newToken)
+    return TokenMapper.toTokenDtoView(newToken)
   }
 }

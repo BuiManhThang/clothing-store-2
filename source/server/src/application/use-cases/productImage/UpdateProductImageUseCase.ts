@@ -1,8 +1,9 @@
 import { ProductImage } from '../../../domain/entities/ProductImage'
 import { NotFoundError } from '../../../shared/errors/NotFoundError'
-import { UpdateProductImageDTO, ViewProductImageDTO } from '../../dtos/ProductImageDTO'
+import { ProductImageDtoUpdate, ProductImageDtoView } from '../../dtos/ProductImageDto'
 import { IProductImageRepo } from '../../../domain/interfaces/repositories/IProductImageRepo'
 import { ProductImageMapper } from '../../mappers/ProductImageMapper'
+import { IUserContextService } from '../../interfaces/IUserContextService'
 
 export class UpdateProductImageUseCase {
   readonly #productImageRepo: IProductImageRepo
@@ -11,27 +12,24 @@ export class UpdateProductImageUseCase {
     this.#productImageRepo = productImageRepo
   }
 
-  async execute(
-    id: string,
-    updateproductImageDTO: UpdateProductImageDTO
-  ): Promise<ViewProductImageDTO | null> {
+  async execute(userContextService: IUserContextService | undefined, id: string, updateproductImageDto: ProductImageDtoUpdate): Promise<ProductImageDtoView | null> {
     const oldProductImage = await this.#productImageRepo.findById(id)
     if (!oldProductImage) throw new NotFoundError('')
 
     const productImage: ProductImage = {
       id: oldProductImage.id,
-      productId: updateproductImageDTO.productId,
-      imageId: updateproductImageDTO.imageId,
-      description: updateproductImageDTO.description,
+      productId: updateproductImageDto.productId,
+      imageId: updateproductImageDto.imageId,
+      description: updateproductImageDto.description,
       createdAt: oldProductImage.createdAt,
       createdBy: oldProductImage.createdBy,
       modifiedAt: new Date(),
-      modifiedBy: '',
+      modifiedBy: userContextService?.getCurrentUserId() || '',
     }
 
     const updatedProductImage = await this.#productImageRepo.update(id, productImage)
 
-    if (updatedProductImage) return ProductImageMapper.toViewProductImageDTO(updatedProductImage)
+    if (updatedProductImage) return ProductImageMapper.toProductImageDtoView(updatedProductImage)
     return null
   }
 }

@@ -1,5 +1,5 @@
-import { ViewProductColorDTO } from '../../dtos/ProductColorDTO'
-import { IProductColorRepo } from '../../interfaces/repositories/IProductColorRepo'
+import { ProductColorDtoView } from '../../dtos/ProductColorDto'
+import { IProductColorRepo } from '../../../domain/interfaces/repositories/IProductColorRepo'
 import { ProductColorMapper } from '../../mappers/ProductColorMapper'
 
 export class FindAllProductColorsUseCase {
@@ -9,8 +9,8 @@ export class FindAllProductColorsUseCase {
     this.#productColorRepo = productColorService
   }
 
-  async execute(): Promise<ViewProductColorDTO[]> {
+  async execute(): Promise<ProductColorDtoView[]> {
     const productColors = await this.#productColorRepo.findAll()
-    return productColors.map((productColor) => ProductColorMapper.toViewProductColorDTO(productColor))
+    return productColors.map((productColor) => ProductColorMapper.toProductColorDtoView(productColor))
   }
 }

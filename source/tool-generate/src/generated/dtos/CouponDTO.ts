@@ -1,4 +1,4 @@
-export interface CreateCouponDTO {
+export interface CouponDtoCreate {
   percent: any;
   expireDate: Date;
   code: string;
@@ -6,7 +6,7 @@ export interface CreateCouponDTO {
   status: string;
 }
 
-export interface UpdateCouponDTO {
+export interface CouponDtoUpdate {
   percent: any;
   expireDate: Date;
   code: string;
@@ -14,10 +14,14 @@ export interface UpdateCouponDTO {
   status: string;
 }
 
-export interface ViewCouponDTO {
+export interface CouponDtoView {
   percent: any;
   expireDate: Date;
   code: string;
   description: string;
   status: string;
+  createdAt: Date
+  createdBy: string
+  modifiedAt?: Date
+  modifiedBy?: string
 }
